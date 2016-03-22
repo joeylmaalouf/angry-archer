@@ -15,7 +15,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", routes.home);
 
-sockets(io);
+sockets.bind(io);
 
 server.listen(PORT, function () {
   console.log("Application running on port:", PORT);

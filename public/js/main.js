@@ -13,8 +13,8 @@ socket.on("chat message", function (data) {
 
 var sendMessage = function () {
   socket.emit("chat message", {
-    "id": clientID,
-    "text": $("#messagebox").val()
+    id: clientID,
+    text: $("#messagebox").val()
   });
   $("#messagebox").val("");
 };
