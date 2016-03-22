@@ -10,6 +10,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", index.home);
 
-server.listen(PORT, function () {
+app.listen(PORT, function () {
   console.log("Application running on port:", PORT);
 });
