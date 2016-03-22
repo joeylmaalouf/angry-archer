@@ -4,7 +4,7 @@ var index = require("./routes/index");
 var app = express();
 var world = require('./world');
 
-world.startWorld();
+world.start();
 
 var PORT = process.env.PORT || 3000;
 
