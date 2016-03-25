@@ -14,18 +14,21 @@ var bindSockets = function (io) {
 
     socket.on("create game", function (data) {
       var game = coordinator.createGame(socket);
+      socket.game = game;
       socket.emit("set game id", {
-        gameID: game.id
+        gameID: socket.game.id
       });
     });
 
     socket.on("join game", function (data) {
       var game = coordinator.joinGame(socket, data.gameID);
+      socket.game = game;
       if (game) {
         socket.emit("set game id", {
-          gameID: game.id
+          gameID: socket.game.id
         });
-        socket.emit("join game success", {/*TODO*/});
+        game.p1.emit("join game success", {/*TODO*/});
+        game.p2.emit("join game success", {/*TODO*/});
       }
       else {
         socket.emit("join game failure", {/*TODO*/});
@@ -33,7 +36,7 @@ var bindSockets = function (io) {
     });
 
     socket.on("end game", function (data) {
-      coordinator.endGame(data.gameID);
+      coordinator.endGame(socket.game.id);
     });
   });
 };

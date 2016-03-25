@@ -14,6 +14,7 @@ var createGame = function () {
 };
 
 var joinGame = function () {
+  endGame();
   socket.emit("join game", {
     gameID: $("#joinGameID").val()
   });
@@ -21,9 +22,7 @@ var joinGame = function () {
 };
 
 var endGame = function () {
-  socket.emit("end game", {
-    gameID: gameID
-  });
+  socket.emit("end game", {});
   gameID = null;
   $("#gameID").text("You are not currently in a game.");
   $("#createGameID").text("");
