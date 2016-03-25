@@ -1,17 +1,25 @@
 var express = require("express");
 var path = require("path");
-var index = require("./routes/index");
-var app = express();
-var world = require('./world');
+var http = require("http");
+var socketio = require("socket.io");
+var routes = require("./src/routes");
+var sockets = require("./src/sockets");
+var world = require("./src/world");
 
-world.start();
+var app = express();
+var server = http.createServer(app);
+var io = socketio.listen(server);
 
 var PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "public")));
 
-// app.get("/", index.home);
+app.get("/", routes.home);
 
-app.listen(PORT, function () {
+sockets.bind(io);
+
+world.start();
+
+server.listen(PORT, function () {
   console.log("Application running on port:", PORT);
 });
