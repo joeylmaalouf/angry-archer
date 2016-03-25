@@ -8,6 +8,7 @@ socket.on("set game id", function (data) {
 });
 
 var createGame = function () {
+  endGame();
   socket.emit("create game", {});
   $("#createGameID").text("Waiting for player 2 to join...");
 };
