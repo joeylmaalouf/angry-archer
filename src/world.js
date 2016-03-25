@@ -1,4 +1,4 @@
-var P = require('./lib/physicsjs/physicsjs-full.js');
+var P = require('../lib/physicsjs/physicsjs-full.js');
 
 P(function (world) {
   P.util.ticker.tickrate(64); // Ticks/second
