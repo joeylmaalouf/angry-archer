@@ -1,20 +1,29 @@
 var socket = io.connect();
 
-var clientID;
+var gameID;
 
-socket.on("set id", function (data) {
-  clientID = data.id;
-  $("#myID").html(clientID);
+socket.on("set game id", function (data) {
+  gameID = data.gameID;
+  $("#gameID").text(gameID);
 });
 
-socket.on("chat message", function (data) {
-  $("#messagelist").append($("<li>").text(data.id + ": " + data.text));
-});
+var createGame = function () {
+  socket.emit("create game", {});
+  $("#createGameID").text("Waiting for player 2 to join...");
+};
 
-var sendMessage = function () {
-  socket.emit("chat message", {
-    id: clientID,
-    text: $("#messagebox").val()
+var joinGame = function () {
+  socket.emit("join game", {
+    gameID: $("#joinGameID").val()
   });
-  $("#messagebox").val("");
+  $("#joinGameID").val("");
+};
+
+var endGame = function () {
+  socket.emit("end game", {
+    gameID: gameID
+  });
+  gameID = null;
+  $("#gameID").text("You are not currently in a game.");
+  $("#createGameID").text("");
 };

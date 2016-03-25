@@ -7,7 +7,14 @@
     <script type="text/javascript" src="./js/main.js"></script>
   </head>
   <body>
-    <ul id="messagelist"></ul>
-    <span id="myID"></span>: <input id="messagebox" type="text" autocomplete="off"><input id="submitmessage" type="button" value="Send" onclick="sendMessage();">
+    <a id="gameID">You are not currently in a game.</a>
+    <br><br><br>
+    <input id="createGame" type="button" value="Create a game" onclick="createGame();">
+    <a id="createGameID"></a>
+    <br><br>
+    <input id="joinGame" type="button" value="Join a game" onclick="joinGame();">
+    <input id="joinGameID" type="text" autocomplete="off">
+    <br><br>
+    <input id="endGame" type="button" value="End your game" onclick="endGame();">
   </body>
 </html>
