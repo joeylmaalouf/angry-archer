@@ -4,7 +4,6 @@ var http = require("http");
 var socketio = require("socket.io");
 var routes = require("./src/routes");
 var sockets = require("./src/sockets");
-var world = require("./src/world");
 
 var app = express();
 var server = http.createServer(app);
@@ -17,8 +16,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", routes.home);
 
 sockets.bind(io);
-
-world.start();
 
 server.listen(PORT, function () {
   console.log("Application running on port:", PORT);
