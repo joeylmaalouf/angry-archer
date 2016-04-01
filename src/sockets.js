@@ -36,7 +36,9 @@ var bindSockets = function (io) {
     });
 
     socket.on("end game", function (data) {
-      coordinator.endGame(socket.game.id);
+      if (socket.game) {
+        coordinator.endGame(socket.game.id);
+      }
     });
   });
 };
