@@ -57,5 +57,14 @@ socket.on("create game success", inWaiting);
 socket.on("join game success", inWaiting);
 socket.on("end game success", inLobby);
 
+socket.on("create game failure", function (data) {
+  // TODO
+});
+
 socket.on("join game failure", function (data) {
+  // TODO
+});
+
+socket.on("end game failure", function (data) {
+  // TODO
 });
