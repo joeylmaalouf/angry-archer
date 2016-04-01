@@ -2,19 +2,19 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script type="text/javascript" src="./js/main.js"></script>
   </head>
   <body>
-    <a id="gameIDText">You are not currently in a game.</a>
+    <a id="gameIDText"></a>
     <br><br><br>
-    <input id="createGameButton" type="button" value="Create a game" onclick="createGame();">
+    <input id="createGameButton" type="button" value="Create a game">
     <a id="createGameText"></a>
     <br><br>
-    <input id="joinGameButton" type="button" value="Join a game" onclick="joinGame();">
+    <input id="joinGameButton" type="button" value="Join a game">
     <input id="joinGameText" type="text" autocomplete="off">
     <br><br>
-    <input id="endGameButton" type="button" value="End your game" onclick="endGame();">
+    <input id="endGameButton" type="button" value="End your game">
   </body>
 </html>
