@@ -11,51 +11,46 @@ $(document).ready(function () {
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
   
-  createGameButton.click(createGame);
-  joinGameButton.click(joinGame);
-  endGameButton.click(endGame);
+  createGameButton.click(function () {
+    socket.emit("create game", {});
+  });
+
+  joinGameButton.click(function () {
+    socket.emit("join game", { gameID: joinGameText.val() });
+  });
+
+  endGameButton.click(function () {
+    socket.emit("end game", {});
+  });
   
-  inLobby();
+  joinLobby();
 });
 
-var createGame = function () {
-  socket.emit("create game", {});
-};
-
-var joinGame = function () {
-  socket.emit("join game", {
-    gameID: joinGameText.val()
-  });
-  joinGameText.val("");
-};
-
-var endGame = function () {
-  socket.emit("end game", {});
-};
-
-var inLobby = function (data) {
+var joinLobby = function (data) {
   gameID = null;
   gameIDText.text("You are not currently in a game.");
   createGameText.text("");
+  joinGameText.val("");
   createGameButton.show();
   joinGameButton.show();
   joinGameText.show();
   endGameButton.hide();
 };
 
-var inWaiting = function (data) {
+var joinWaiting = function (data) {
   gameID = data.gameID;
   gameIDText.text(gameID);
   createGameText.text("Waiting for player " + data.otherPlayer + "...");
+  joinGameText.val("");
   createGameButton.hide();
   joinGameButton.hide();
   joinGameText.hide();
   endGameButton.show();
 };
 
-socket.on("create game success", inWaiting);
-socket.on("join game success", inWaiting);
-socket.on("end game success", inLobby);
+socket.on("create game success", joinWaiting);
+socket.on("join game success", joinWaiting);
+socket.on("end game success", joinLobby);
 
 socket.on("create game failure", function (data) {
   // TODO
