@@ -1,0 +1,18 @@
+.navbar-center {
+  position: absolute;
+  float: none;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  text-align: center;
+  margin: auto;
+  margin-left: 25%;
+}
+
+.navbar-left {
+  margin-left: 3.5%;
+}
+
+.navbar-right {
+  margin-right: 3.5%;
+}

@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Angry Archer</title>
     <meta charset="utf-8">
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script type="text/javascript" src="./js/main.js"></script>
+    <link type="text/css" rel="stylesheet" href="./css/bootstrap-slate.css">
+    <link type="text/css" rel="stylesheet" href="./css/styles.css">
   </head>
   <body>
-    <a id="gameIDText"></a>
-    <br><br><br>
-    <input id="createGameButton" type="button" value="Create a game">
+    <nav class="navbar">
+      <div class="navbar-left">
+        <input id="createGameButton" type="button" class="btn btn-default navbar-btn" value="Create game">
+      </div>
+      <div class="navbar-center navbar-form">
+        <div class="form-group">
+          <input id="joinGameText" type="text" autocomplete="off" class="form-control">
+        </div>
+        <input id="joinGameButton" type="button" class="btn btn-default navbar-btn" value="Join game">
+      </div>
+      <div class="navbar-right">
+        <input id="endGameButton" type="button" class="btn btn-default navbar-btn" value="End game">
+      </div>
+    </nav>
+    <a id="messageText"></a>
+    <br>
     <a id="createGameText"></a>
-    <br><br>
-    <input id="joinGameButton" type="button" value="Join a game">
-    <input id="joinGameText" type="text" autocomplete="off">
-    <br><br>
-    <input id="endGameButton" type="button" value="End your game">
+    <br>
+    <div id="viewport"></div>
   </body>
 </html>

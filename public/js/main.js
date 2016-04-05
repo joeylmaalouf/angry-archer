@@ -1,15 +1,16 @@
 var socket = io.connect();
-var gameIDText, createGameText, joinGameText;
+var messageText, createGameText, joinGameText;
 var createGameButton, joinGameButton, endGameButton;
-var gameID;
+var viewport;
 
 $(document).ready(function () {
-  gameIDText = $("#gameIDText");
+  messageText = $("#messageText");
   createGameText = $("#createGameText");
   joinGameText = $("#joinGameText");
   createGameButton = $("#createGameButton");
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
+  viewport = $("#viewport");
   
   createGameButton.click(function () {
     socket.emit("create game", {});
@@ -23,29 +24,27 @@ $(document).ready(function () {
     socket.emit("end game", {});
   });
   
-  joinLobby();
+  joinLobby({});
 });
 
 var joinLobby = function (data) {
-  gameID = null;
-  gameIDText.text("You are not currently in a game.");
+  messageText.text("You are not currently in a game.");
   createGameText.text("");
   joinGameText.val("");
-  createGameButton.show();
-  joinGameButton.show();
-  joinGameText.show();
-  endGameButton.hide();
+  createGameButton.prop("disabled", false);
+  joinGameButton.prop("disabled", false);
+  joinGameText.prop("disabled", false);
+  endGameButton.prop("disabled", true);
 };
 
 var joinWaiting = function (data) {
-  gameID = data.gameID;
-  gameIDText.text(gameID);
+  messageText.text("Your game ID is: " + data.gameID);
   createGameText.text("Waiting for player " + data.otherPlayer + "...");
   joinGameText.val("");
-  createGameButton.hide();
-  joinGameButton.hide();
-  joinGameText.hide();
-  endGameButton.show();
+  createGameButton.prop("disabled", true);
+  joinGameButton.prop("disabled", true);
+  joinGameText.prop("disabled", true);
+  endGameButton.prop("disabled", false);
 };
 
 socket.on("create game success", joinWaiting);
