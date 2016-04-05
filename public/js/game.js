@@ -21,9 +21,12 @@ var colors = [
 function initWorld(world, Physics) {
 
   // bounds of the window
-  var viewWidth = window.innerWidth
-    ,viewHeight = window.innerHeight
-    ,viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
+  // var viewWidth = window.innerWidth
+  var viewWidth = window.innerWidth * .95
+    // ,viewHeight = window.innerHeight
+    ,viewHeight = viewWidth * .33
+    // ,viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
+    ,viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight)
     ,edgeBounce
     ,renderer
     ,styles = {
@@ -50,6 +53,7 @@ function initWorld(world, Physics) {
 
   // create a renderer
   renderer = Physics.renderer('pixi', { el: 'viewport', styles: styles });
+  renderer.resize(viewWidth, viewHeight);
   // add the renderer
   world.add(renderer);
   // render on each step
@@ -66,12 +70,7 @@ function initWorld(world, Physics) {
 
   // resize events
   window.addEventListener('resize', function () {
-
-    // as of 0.7.0 the renderer will auto resize... so we just take the values from the renderer
-    viewportBounds = Physics.aabb(0, 0, renderer.width, renderer.height);
-    // update the boundaries
-    edgeBounce.setAABB(viewportBounds);
-
+    renderer.resize(viewWidth, viewHeight);
   }, true);
 
   // add behaviors to the world

@@ -1,1 +1,10 @@
-#viewport { position: relative; height: 100%; background: #1d1f20; }
+#viewport { 
+	display: inline-block;
+	position: relative; 
+	background: #1d1f20;
+}
+
+.wrapper {
+	width: 100%;
+	text-align: center;
+}
