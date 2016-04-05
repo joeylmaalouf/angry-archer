@@ -1,7 +1,6 @@
 #viewport { 
 	display: inline-block;
-	position: relative; 
-	background: #1d1f20;
+	position: relative;
 }
 
 .wrapper {

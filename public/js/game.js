@@ -17,48 +17,69 @@ var colors = [
   ,['0x58c73c', '0x30641c']
   ,['0xcac34c', '0x736a2c']
 ];
-
+var rendererContainer;
 function initWorld(world, Physics) {
 
-  // bounds of the window
-  // var viewWidth = window.innerWidth
-  var viewWidth = window.innerWidth * .95
-    // ,viewHeight = window.innerHeight
-    ,viewHeight = viewWidth * .33
-    // ,viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
-    ,viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight)
-    ,edgeBounce
-    ,renderer
-    ,styles = {
-      'circle': {
-        fillStyle: colors[0][0],
-        lineWidth: 1,
-        strokeStyle: colors[0][1],
-        angleIndicator: colors[0][1]
-      }
-      ,'rectangle': {
-        fillStyle: colors[1][0],
-        lineWidth: 1,
-        strokeStyle: colors[1][1],
-        angleIndicator: colors[1][1]
-      }
-      ,'convex-polygon': {
-        fillStyle: colors[2][0],
-        lineWidth: 1,
-        strokeStyle: colors[2][1],
-        angleIndicator: colors[2][1]
-      }
-    }
-    ;
+  var stage = new PIXI.Stage(0x01d1f20);
+  var viewWidth = window.innerWidth * .95;
+  var viewHeight = viewWidth * .33;
+  var renderer = PIXI.autoDetectRenderer(viewWidth, viewHeight, { antialias: true, resolution: 1 });
 
-  // create a renderer
-  renderer = Physics.renderer('pixi', { el: 'viewport', styles: styles });
-  renderer.resize(viewWidth, viewHeight);
-  // add the renderer
-  world.add(renderer);
+  var graphics = new PIXI.Graphics();
+  stage.addChild(graphics);
+  rendererContainer = document.getElementById("viewport");
+  rendererContainer.appendChild(renderer.view);
+
+  
+  // ,viewportBounds = Physics.aabb(0, 0, window.innerWidth, window.innerHeight)
+  var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
+  var edgeBounce;
+  var renderer;
+  var styles = {
+    'circle': {
+      fillStyle: colors[0][0],
+      lineWidth: 1,
+      strokeStyle: colors[0][1],
+      angleIndicator: colors[0][1]
+    }
+    ,'rectangle': {
+      fillStyle: colors[1][0],
+      lineWidth: 1,
+      strokeStyle: colors[1][1],
+      angleIndicator: colors[1][1]
+    }
+    ,'convex-polygon': {
+      fillStyle: colors[2][0],
+      lineWidth: 1,
+      strokeStyle: colors[2][1],
+      angleIndicator: colors[2][1]
+    }
+  };
+
   // render on each step
+  var x = 10, y = 10;
   world.on('step', function () {
-    world.render();
+    graphics.clear();
+    for (index in world._bodies) {
+      var body = world._bodies[index];
+      graphics.beginFill(0xe74c3c);
+      if (body.name == "circle") {
+        graphics.drawCircle(body.state.pos.x, body.state.pos.y, body.radius);
+      } else if (body.name == "rectangle") {
+        graphics.drawRect(body.state.pos.x - body.width/2, body.state.pos.y - body.height/2, body.width, body.height);
+      } else if (body.name == "convex-polygon") {
+        var path = [];
+        for (index in body.vertices) {
+          path.push(new PIXI.Point(body.state.pos.x + body.vertices[index].x, body.state.pos.y + body.vertices[index].y));
+        }
+        graphics.drawPolygon(path);
+        console.log(body);
+      }
+      graphics.endFill();
+      // console.log(index, world._bodies[thing]);
+
+    }
+    renderer.render(stage);
   });
   
   // constrain objects to these bounds
@@ -70,7 +91,7 @@ function initWorld(world, Physics) {
 
   // resize events
   window.addEventListener('resize', function () {
-    renderer.resize(viewWidth, viewHeight);
+    // renderer.resize(viewWidth, viewHeight);
   }, true);
 
   // add behaviors to the world
@@ -87,6 +108,7 @@ function startWorld( world, Physics ){
   // subscribe to ticker to advance the simulation
   Physics.util.ticker.on(function( time ) {
     world.step( time );
+    // console.log(world._bodies[0].state.pos.x);
   });
 }
 
@@ -95,7 +117,7 @@ function startWorld( world, Physics ){
 //
 function addInteraction( world, Physics ){
   // add the mouse interaction
-  world.add(Physics.behavior('interactive', { el: world.renderer().container }));
+  world.add(Physics.behavior('interactive', { el: rendererContainer }));
   // add some fun extra interaction
   var attractor = Physics.behavior('attractor', {
     order: 0,
