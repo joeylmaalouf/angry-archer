@@ -52,13 +52,13 @@ socket.on("join game success", joinWaiting);
 socket.on("end game success", joinLobby);
 
 socket.on("create game failure", function (data) {
-  // TODO
+  alert("Error: failed to create game.");
 });
 
 socket.on("join game failure", function (data) {
-  // TODO
+  alert("Error: failed to join game.");
 });
 
 socket.on("end game failure", function (data) {
-  // TODO
+  alert("Error: failed to end game.");
 });
