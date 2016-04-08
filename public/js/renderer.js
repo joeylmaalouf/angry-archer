@@ -122,9 +122,7 @@ function makeRenderer(Physics) {
                 parent.resize.call( this, width, height );
                 this.renderer.resize( this.width, this.height );
                 if (height) {
-                    console.log("Resizing to ", width, height);
                     viewScale = height/defaultHeight;
-                    console.log("viewScale = ", viewScale);
                 } else {
                     viewScale = 1;
                 }

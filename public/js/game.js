@@ -12,12 +12,10 @@ function initWorld(world, Physics) {
   var worldWidth = 1200;
   var worldHeight = worldWidth/aspectRatio;
 
-
-
   // bounds of the window
   var viewWidth = window.innerWidth * .95
     ,viewHeight = viewWidth/aspectRatio
-    ,viewportBounds = Physics.aabb(0, 0, worldWidth, worldHeight)
+    ,boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight)
     ,edgeBounce
     ,renderer
     ,styles = {
@@ -44,6 +42,7 @@ function initWorld(world, Physics) {
   // add the renderer
   makeRenderer(Physics);
   renderer = Physics.renderer('pixi-scalable', { el: 'viewport', styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
+  renderer.resize(viewWidth, viewHeight);
   world.add(renderer);
   // render on each step
   world.on('step', function () {
@@ -52,7 +51,7 @@ function initWorld(world, Physics) {
   
   // constrain objects to these bounds
   edgeBounce = Physics.behavior('edge-collision-detection', {
-    aabb: viewportBounds
+    aabb: boundingBox
     ,restitution: 0.2
     ,cof: 0.8
   });
@@ -60,10 +59,7 @@ function initWorld(world, Physics) {
   // resize events
   window.addEventListener('resize', function () {
     viewWidth = window.innerWidth * .95;
-    
     viewHeight = viewWidth/aspectRatio;
-    console.log("Resize command ", viewWidth, viewHeight);
-    // console.log("window inner size", $(window).width(), $(window).height());
     renderer.resize(viewWidth, viewHeight);
   }, true);
 
