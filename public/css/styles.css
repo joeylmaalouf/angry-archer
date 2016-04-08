@@ -16,3 +16,13 @@
 .navbar-right {
   margin-right: 3.5%;
 }
+
+.wrapper {
+  width: 100%;
+  text-align: center;
+}
+
+#viewport { 
+  display: inline-block;
+  position: relative;
+}
