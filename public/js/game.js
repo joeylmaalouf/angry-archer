@@ -18,6 +18,8 @@ var colors = [
   ,['0xcac34c', '0x736a2c']
 ];
 
+// var myRenderer = require('./renderer.js');
+
 function initWorld(world, Physics) {
 
   // bounds of the window
@@ -48,14 +50,12 @@ function initWorld(world, Physics) {
         strokeStyle: colors[2][1],
         angleIndicator: colors[2][1]
       }
-    }
-    ;
+    };
 
-  // create a renderer
-  renderer = Physics.renderer('pixi', { el: 'viewport', styles: styles });
-  renderer.resize(viewWidth, viewHeight);
   // add the renderer
-  world.add(renderer);
+  // var myRenderer = makeRenderer(Physics, {el: 'viewport'});
+  var myRenderer = Physics.renderer('pixi', { el: 'viewport', styles: styles });
+  world.add(myRenderer);
   // render on each step
   world.on('step', function () {
     world.render();
