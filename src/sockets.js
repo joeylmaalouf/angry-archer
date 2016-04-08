@@ -5,38 +5,57 @@ var sockets = {};
 var bindSockets = function (io) {
   io.on("connection", function (socket) {
     sockets[socket.id] = socket;
-    console.log("User connected: " + socket.id);
 
     socket.on("disconnect", function (data) {
-      console.log("User disconnected: " + socket.id);
       delete sockets[socket.id];
     });
 
     socket.on("create game", function (data) {
       var game = coordinator.createGame(socket);
       socket.game = game;
-      socket.emit("set game id", {
-        gameID: socket.game.id
-      });
+      if (game) {
+        socket.emit("create game success", {
+          gameID: socket.game.id,
+          otherPlayer: "2"
+        });
+      }
+      else {
+        socket.emit("create game failure", {});
+      }
     });
 
     socket.on("join game", function (data) {
       var game = coordinator.joinGame(socket, data.gameID);
       socket.game = game;
       if (game) {
-        socket.emit("set game id", {
-          gameID: socket.game.id
+        game.p1.emit("join game success", {
+          gameID: socket.game.id,
+          otherPlayer: "2"
         });
-        game.p1.emit("join game success", {/*TODO*/});
-        game.p2.emit("join game success", {/*TODO*/});
+        game.p2.emit("join game success", {
+          gameID: socket.game.id,
+          otherPlayer: "1"
+        });
       }
       else {
-        socket.emit("join game failure", {/*TODO*/});
+        socket.emit("join game failure", {});
       }
     });
 
     socket.on("end game", function (data) {
-      coordinator.endGame(socket.game.id);
+      if (socket.game) {
+        coordinator.endGame(socket.game.id);
+        if (socket.game.p1) {
+          socket.game.p1.emit("end game success", {});
+        }
+        if (socket.game.p2) {
+          socket.game.p2.emit("end game success", {});
+        }
+        delete socket.game;
+      }
+      else {
+        socket.emit("end game failure", {});
+      }
     });
   });
 };

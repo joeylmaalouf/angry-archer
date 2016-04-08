@@ -1,14 +1,3 @@
-require.config({
-  baseUrl: 'http://wellcaffeinated.net/PhysicsJS/assets/scripts/vendor/',
-  packages: [
-    {
-      name: 'physicsjs',
-      location: 'physicsjs-current',
-      main: 'physicsjs-full.min'
-    }
-  ]
-});
-
 var colors = [
   ['0x268bd2', '0x0d394f']
   ,['0xc93b3b', '0x561414']
@@ -88,17 +77,15 @@ function initWorld(world, Physics) {
   ]);  
 }
 
-function startWorld( world, Physics ){
+function startWorld (world, Physics) {
   // subscribe to ticker to advance the simulation
   Physics.util.ticker.on(function( time ) {
     world.step( time );
   });
 }
 
-//
 // Add some interaction
-//
-function addInteraction( world, Physics ){
+function addInteraction (world, Physics) {
   // add the mouse interaction
   world.add(Physics.behavior('interactive', { el: world.renderer().container }));
   // add some fun extra interaction
@@ -124,14 +111,12 @@ function addInteraction( world, Physics ){
 }
 
 // helper function (bind "this" to Physics)
-function makeBody( obj ){ 
-  return this.body( obj.name, obj );
+function makeBody (obj) { 
+  return this.body(obj.name, obj);
 }
 
-//
 // Add bodies to the world
-//
-function addBodies( world, Physics ){
+function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
     { name: 'circle', x: 100, y: 100, vx: 0.1, radius: 60 }
@@ -143,15 +128,14 @@ function addBodies( world, Physics ){
   world.add( bodies.map(makeBody.bind(Physics)) );
 }
 
-//
 // Load the libraries with requirejs and create the simulation
-//
-require([
-  'physicsjs',
-  'pixi'
-], function( Physics, PIXI ){
+require.config({
+  baseUrl: 'js'
+});
+
+require(['physicsjs-full.min', 'pixi.min'],
+function (Physics, PIXI) {
   window.PIXI = PIXI;
-  
   var worldConfig = {
     // timestep
     timestep: 6,
@@ -168,12 +152,10 @@ require([
     // time (ms) before sleepy bodies fall asleep
     sleepTimeLimit: 500
   };
-  
-  Physics( worldConfig, [
+  Physics(worldConfig, [
     initWorld,
     addInteraction,
     addBodies,
     startWorld
   ]);
-  
 });

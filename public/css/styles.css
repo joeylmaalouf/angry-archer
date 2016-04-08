@@ -1,10 +1,18 @@
-#viewport { 
-	display: inline-block;
-	position: relative; 
-	background: #1d1f20;
+.navbar-center {
+  position: absolute;
+  float: none;
+  width: 50%;
+  height: 100%;
+  top: 0;
+  text-align: center;
+  margin: auto;
+  margin-left: 25%;
 }
 
-.wrapper {
-	width: 100%;
-	text-align: center;
+.navbar-left {
+  margin-left: 3.5%;
+}
+
+.navbar-right {
+  margin-right: 3.5%;
 }
