@@ -126,7 +126,7 @@ function addBodies (world, Physics) {
 
 // Load the libraries with requirejs and create the simulation
 require.config({
-  baseUrl: 'js'
+  baseUrl: 'js/lib'
 });
 
 require(['physicsjs-full.min', 'pixi.min'],

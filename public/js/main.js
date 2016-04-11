@@ -17,7 +17,7 @@ $(document).ready(function () {
   });
 
   joinGameButton.click(function () {
-    socket.emit("join game", { gameID: joinGameText.val() });
+    socket.emit("join game", { gameID: joinGameText.val().replace(/\s+/g, "") });
   });
 
   endGameButton.click(function () {
@@ -55,7 +55,7 @@ socket.on("join game success", joinWaiting);
 socket.on("end game success", joinLobby);
 
 require.config({
-  baseUrl: "js"
+  baseUrl: "js/lib"
 });
 require(["physicsjs-full.min"],
 function (Physics) {
