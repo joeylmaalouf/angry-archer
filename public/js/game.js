@@ -91,25 +91,23 @@ function addInteraction (world, Physics) {
   // add some fun extra interaction
   var attractor = Physics.behavior('attractor', {
     order: 0,
-    strength: 0.002
+    strength: 0.005
   });
   
   world.on({
     'interact:poke': function( pos ){
       // console.log("Literal Mousepos", pos);
-      pos.x = (pos.x * viewScale) - viewXOffset;
+      pos.x = (pos.x * viewScale);
       pos.y = pos.y * viewScale;
-      /* console.log("Shifted Mousepos", pos);
-      if (pos.body) {
-        console.log("Body pos", pos.body.state.pos);
-      } */
+      // console.log("Shifted Mousepos", pos);
+      // world._bodies.map(function(e) {console.log(e.name, e.state.pos.x, e.state.pos.y)});
       
       world.wakeUpAll();
       attractor.position( pos );
       world.add( attractor );
     }
     ,'interact:move': function( pos ){
-      pos.x = (pos.x * viewScale) - viewXOffset;
+      pos.x = (pos.x * viewScale);
       pos.y = pos.y * viewScale;
       attractor.position( pos );
     }
@@ -178,9 +176,9 @@ function (Physics, PIXI) {
     // speed at which bodies wake up
     sleepSpeedLimit: 0.1,
     // variance in position below which bodies fall asleep
-    sleepVarianceLimit: 2,
+    sleepVarianceLimit: 5,
     // time (ms) before sleepy bodies fall asleep
-    sleepTimeLimit: 500
+    sleepTimeLimit: 2000
   };
   Physics(worldConfig, [
     initWorld,
