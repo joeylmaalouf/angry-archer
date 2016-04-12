@@ -5,7 +5,7 @@ function makeRenderer(Physics) {
             // must be in node environment
             return {};
         }
-        var viewScale = 1; // Custom var: size of viewport relative to default
+        this.viewScale = 1; // Custom var: size of viewport relative to default
         var defaultHeight;
         var Pi2 = Math.PI * 2
             ,colors = {
@@ -122,9 +122,9 @@ function makeRenderer(Physics) {
                 parent.resize.call( this, width, height );
                 this.renderer.resize( this.width, this.height );
                 if (height) {
-                    viewScale = height/defaultHeight;
+                    this.viewScale = height/defaultHeight;
                 } else {
-                    viewScale = 1;
+                    this.viewScale = 1;
                 }
                 
             },
@@ -228,10 +228,10 @@ function makeRenderer(Physics) {
     
                 // interpolate positions
                 // scale object to maintain size relative to viewport
-                view.scale.x = viewScale;
-                view.scale.y = viewScale;
-                x = (pos._[0] + v._[0] * t) * viewScale;
-                y = (pos._[1] + v._[1] * t) * viewScale;
+                view.scale.x = this.viewScale;
+                view.scale.y = this.viewScale;
+                x = (pos._[0] + v._[0] * t) * this.viewScale;
+                y = (pos._[1] + v._[1] * t) * this.viewScale;
                 ang = body.state.angular.pos + body.state.angular.vel * t;
     
                 view.position.set( x, y );

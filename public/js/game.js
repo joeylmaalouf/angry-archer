@@ -6,14 +6,15 @@ var colors = [
   ,['0x58c73c', '0x30641c']
   ,['0xcac34c', '0x736a2c']
 ];
-
+var viewXOffset, viewScale;
 function initWorld(world, Physics) {
   var aspectRatio = 3/1;
   var worldWidth = 1200;
   var worldHeight = worldWidth/aspectRatio;
-
+  var viewWidthPercentage = .95;
+  viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
   // bounds of the window
-  var viewWidth = window.innerWidth * .95
+  var viewWidth = window.innerWidth * viewWidthPercentage
     ,viewHeight = viewWidth/aspectRatio
     ,boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight)
     ,edgeBounce
@@ -43,6 +44,7 @@ function initWorld(world, Physics) {
   makeRenderer(Physics);
   renderer = Physics.renderer('pixi-scalable', { el: 'viewport', styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
   renderer.resize(viewWidth, viewHeight);
+  viewScale = 1/renderer.viewScale;
   world.add(renderer);
   // render on each step
   world.on('step', function () {
@@ -58,9 +60,10 @@ function initWorld(world, Physics) {
 
   // resize events
   window.addEventListener('resize', function () {
-    viewWidth = window.innerWidth * .95;
+    viewWidth = window.innerWidth * viewWidthPercentage;
     viewHeight = viewWidth/aspectRatio;
     renderer.resize(viewWidth, viewHeight);
+    viewScale = 1/renderer.viewScale;
   }, true);
 
   // add behaviors to the world
@@ -78,6 +81,7 @@ function startWorld (world, Physics) {
   Physics.util.ticker.on(function( time ) {
     world.step( time );
   });
+  window.world = world;
 }
 
 // Add some interaction
@@ -92,11 +96,21 @@ function addInteraction (world, Physics) {
   
   world.on({
     'interact:poke': function( pos ){
+      console.log("Literal Mousepos", pos);
+      pos.x = (pos.x * viewScale) - viewXOffset;
+      pos.y = pos.y * viewScale;
+      console.log("Shifted Mousepos", pos);
+      if (pos.body) {
+        console.log("Body pos", pos.body.state.pos);
+      }
+      
       world.wakeUpAll();
       attractor.position( pos );
       world.add( attractor );
     }
     ,'interact:move': function( pos ){
+      pos.x = (pos.x * viewScale) - viewXOffset;
+      pos.y = pos.y * viewScale;
       attractor.position( pos );
     }
     ,'interact:release': function(){
