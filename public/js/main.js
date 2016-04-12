@@ -71,17 +71,22 @@ var beginWorld = function (data) {
 };
 
 socket.on("create game success", joinWaiting);
+socket.on("create game failure", function (data) { alert("Error: failed to create game."); });
+
 socket.on("join game success", joinWaiting);
+socket.on("join game failure", function (data) { alert("Error: failed to join game."); });
+
 socket.on("end game success", joinLobby);
+socket.on("end game failure", function (data) { alert("Error: failed to end game."); });
+
 socket.on("play game success", startGame);
+socket.on("play game failure", function (data) { alert("Error: failed to play game."); });
+
 socket.on("pause game success", stopGame);
+socket.on("pause game failure", function (data) { alert("Error: failed to pause game."); });
+
 socket.on("begin simulation", beginWorld);
 
-socket.on("create game failure", function (data) { alert("Error: failed to create game."); });
-socket.on("join game failure", function (data) { alert("Error: failed to join game."); });
-socket.on("end game failure", function (data) { alert("Error: failed to end game."); });
-socket.on("play game failure", function (data) { alert("Error: failed to play game."); });
-socket.on("pause game failure", function (data) { alert("Error: failed to pause game."); });
 
 $(document).keydown(function (event) {
   if (inGame) {
