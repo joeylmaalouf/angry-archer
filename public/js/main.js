@@ -86,10 +86,10 @@ socket.on("pause game failure", function (data) { alert("Error: failed to pause 
 $(document).keydown(function (event) {
   if (inGame) {
     switch (event.keyCode) {
-      case 32:
+      case 32: // space
         socket.emit("play game", {});
         break;
-      case 27:
+      case 27: // esc
         socket.emit("pause game", {});
         break;
       default:
