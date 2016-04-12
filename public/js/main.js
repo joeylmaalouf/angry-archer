@@ -28,6 +28,20 @@ $(document).ready(function () {
   joinLobby({});
 });
 
+$(document).keydown(function (event) {
+  if (inGame) {
+    switch (event.keyCode) {
+      case 32: // space
+        socket.emit("play game", {});
+        break;
+      case 27: // esc
+        socket.emit("pause game", {});
+        break;
+      default:
+    }
+  }
+});
+
 var joinLobby = function (data) {
   messageText.text("You are not currently in a game.");
   createGameText.text("");
@@ -86,18 +100,3 @@ socket.on("pause game success", stopGame);
 socket.on("pause game failure", function (data) { alert("Error: failed to pause game."); });
 
 socket.on("begin simulation", beginWorld);
-
-
-$(document).keydown(function (event) {
-  if (inGame) {
-    switch (event.keyCode) {
-      case 32: // space
-        socket.emit("play game", {});
-        break;
-      case 27: // esc
-        socket.emit("pause game", {});
-        break;
-      default:
-    }
-  }
-});
