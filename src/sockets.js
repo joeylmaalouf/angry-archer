@@ -61,21 +61,27 @@ var bindSockets = function (io) {
         }
       }
       else {
-        socket.emit("play game failure");
+        socket.emit("play game failure", {});
       }
     };
 
     var pauseGame = function (data) {
       if (socket.game) {
-        if (socket.game.p1) {
-          socket.game.p1.emit("pause game success", {});
+        if (data.ready && ++socket.game.numReady == 2) {
+          socket.game.p1.emit("begin simulation", {});
+          socket.game.p2.emit("begin simulation", {});
         }
-        if (socket.game.p2) {
-          socket.game.p2.emit("pause game success", {});
+        else {
+          if (socket.game.p1) {
+            socket.game.p1.emit("pause game success", {});
+          }
+          if (socket.game.p2) {
+            socket.game.p2.emit("pause game success", {});
+          }
         }
       }
       else {
-        socket.emit("pause game failure");
+        socket.emit("pause game failure", {});
       }
     };
 
