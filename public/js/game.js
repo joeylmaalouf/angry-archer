@@ -126,12 +126,15 @@ function makeBody (obj) {
 /*
   updateWorld(Array[Physics.Body]) -> undefined
 
-  Update/add bodies to synchronize game state between clients
+  Update/add/remove bodies to synchronize game state between clients
   Assumptions:
     uid is identical for bodies between clients
 */
 function updateWorld(theirBodies) {
+  // Sort by ascending uid
   theirBodies.sort(function(a,b) {return a.uid - b.uid});
+
+  // Add/Update Bodies
   theirBodies.map(function(theirBody) {
     var myBody;
     if (world._bodies.some(function(el) {myBody = el; return el.uid == theirBody.uid})) {
@@ -140,6 +143,15 @@ function updateWorld(theirBodies) {
       world.add(theirBody);
     }
   });
+
+  // Remove Bodies
+  for (var i = world._bodies.length-1; i >= 0; i--) {
+    var myBody = world._bodies[i];
+    var theirBody;
+    if (!theirBodies.some(function(el) {theirBody = el; return el.uid == myBody.uid})) {
+      world.remove(myBody);
+    }
+  };
 }
 
 // Add bodies to the world
