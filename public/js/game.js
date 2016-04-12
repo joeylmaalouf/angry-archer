@@ -125,6 +125,25 @@ function makeBody (obj) {
   return this.body(obj.name, obj);
 }
 
+/*
+  updateWorld(Array[Physics.Body]) -> undefined
+
+  Update/add bodies to synchronize game state between clients
+  Assumptions:
+    uid is identical for bodies between clients
+*/
+function updateWorld(theirBodies) {
+  theirBodies.sort(function(a,b) {return a.uid - b.uid});
+  theirBodies.map(function(theirBody) {
+    var myBody;
+    if (world._bodies.some(function(el) {myBody = el; return el.uid == theirBody.uid})) {
+      myBody.state = theirBody.state;
+    } else {
+      world.add(theirBody);
+    }
+  });
+}
+
 // Add bodies to the world
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
@@ -145,6 +164,7 @@ require.config({
 
 require(['physicsjs-full.min', 'pixi.min'],
 function (Physics, PIXI) {
+  window.Physics = Physics;
   window.PIXI = PIXI;
   var worldConfig = {
     // timestep
