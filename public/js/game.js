@@ -124,7 +124,7 @@ function makeBody (obj) {
 }
 
 /*
-  updateWorld(Array[Physics.Body]) -> undefined
+  updateWorld(Array[{uid: Number, state: {}}]) -> undefined
 
   Update/add/remove bodies to synchronize game state between clients
   Assumptions:
