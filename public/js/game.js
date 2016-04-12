@@ -100,28 +100,31 @@ function addInteraction (world, Physics) {
     pos.y *= viewScale;
     // console.log("Shifted Mousepos", pos);
     // world._bodies.map(function(e) {console.log(e.name, e.state.pos.x, e.state.pos.y)});    
-    world.wakeUpAll();
-    attractor.position(pos);
-    world.add(attractor);
     if (!isHost) {
       socket.emit("interaction", { type: "poke", pos: pos });
+    } else {
+      world.wakeUpAll();
+      attractor.position(pos);
+      world.add(attractor);
     }
   };
   
   var interactionMove = function (pos) {
     pos.x *= viewScale;
     pos.y *= viewScale;
-    attractor.position(pos);
     if (!isHost) {
       socket.emit("interaction", { type: "move", pos: pos });
+    } else {
+      attractor.position(pos);
     }
   };
 
   var interactionRelease = function () {
     world.wakeUpAll();
-    world.remove(attractor);
     if (!isHost) {
       socket.emit("interaction", { type: "release" });
+    } else {
+      world.remove(attractor);
     }
   };
 

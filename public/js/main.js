@@ -111,7 +111,7 @@ var parseInput = function (data) {
       interactionPoke(data.pos);
       break;
     case "move":
-      interactionMove();
+      interactionMove(data.pos);
       break;
     case "release":
       interactionRelease();
@@ -119,24 +119,25 @@ var parseInput = function (data) {
     default:
   }
 };
-var attractor;
+var attractor, attractorIndex;
 setInterval(function () {
   attractor = Physics.behavior("attractor", {
     order: 0,
     strength: 0.005
   });
-}, 1000);
+}, 500);
 var interactionPoke = function (pos) {
   world.wakeUpAll();
   attractor.position(pos);
   world.add(attractor);
+  attractorIndex = world._behaviors.length-1;
 };
 var interactionMove = function (pos) {
   attractor.position(pos);
 };
 var interactionRelease = function () {
   world.wakeUpAll();
-  world.remove(attractor);
+  world.remove(world._behaviors[attractorIndex]);
 };
 
 socket.on("create game success", joinWaiting);
