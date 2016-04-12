@@ -96,13 +96,13 @@ function addInteraction (world, Physics) {
   
   world.on({
     'interact:poke': function( pos ){
-      console.log("Literal Mousepos", pos);
+      // console.log("Literal Mousepos", pos);
       pos.x = (pos.x * viewScale) - viewXOffset;
       pos.y = pos.y * viewScale;
-      console.log("Shifted Mousepos", pos);
+      /* console.log("Shifted Mousepos", pos);
       if (pos.body) {
         console.log("Body pos", pos.body.state.pos);
-      }
+      } */
       
       world.wakeUpAll();
       attractor.position( pos );
@@ -145,6 +145,7 @@ require.config({
 
 require(['physicsjs-full.min', 'pixi.min'],
 function (Physics, PIXI) {
+  window.Physics = Physics;
   window.PIXI = PIXI;
   var worldConfig = {
     // timestep

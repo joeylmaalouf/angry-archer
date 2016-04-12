@@ -2,6 +2,7 @@ var socket = io.connect();
 var messageText, createGameText, joinGameText;
 var createGameButton, joinGameButton, endGameButton;
 var viewport;
+var inGame;
 
 $(document).ready(function () {
   messageText = $("#messageText");
@@ -36,6 +37,7 @@ var joinLobby = function (data) {
   joinGameText.prop("disabled", false);
   endGameButton.prop("disabled", true);
   viewport.hide();
+  inGame = false;
 };
 
 var joinWaiting = function (data) {
@@ -47,24 +49,50 @@ var joinWaiting = function (data) {
   joinGameText.prop("disabled", true);
   endGameButton.prop("disabled", false);
   viewport.show();
-  socket.emit("pause game", {});
+  socket.emit("pause game", { ready: true });
+  inGame = true;
+};
+
+var startGame = function (data) {
+  if (Physics) {
+    Physics.util.ticker.start();
+  }
+};
+
+var stopGame = function (data) {
+  if (Physics) {
+    Physics.util.ticker.stop();
+  }
+};
+
+var beginWorld = function (data) {
+  createGameText.text("Welcome to Angry Archer!");
+  socket.emit("play game", {});
 };
 
 socket.on("create game success", joinWaiting);
 socket.on("join game success", joinWaiting);
 socket.on("end game success", joinLobby);
-
-require.config({
-  baseUrl: "js/lib"
-});
-require(["physicsjs-full.min"],
-function (Physics) {
-  socket.on("play game success", Physics.util.ticker.start);
-  socket.on("pause game success", Physics.util.ticker.stop);
-});
+socket.on("play game success", startGame);
+socket.on("pause game success", stopGame);
+socket.on("begin simulation", beginWorld);
 
 socket.on("create game failure", function (data) { alert("Error: failed to create game."); });
 socket.on("join game failure", function (data) { alert("Error: failed to join game."); });
 socket.on("end game failure", function (data) { alert("Error: failed to end game."); });
 socket.on("play game failure", function (data) { alert("Error: failed to play game."); });
 socket.on("pause game failure", function (data) { alert("Error: failed to pause game."); });
+
+$(document).keydown(function (event) {
+  if (inGame) {
+    switch (event.keyCode) {
+      case 32:
+        socket.emit("play game", {});
+        break;
+      case 27:
+        socket.emit("pause game", {});
+        break;
+      default:
+    }
+  }
+});

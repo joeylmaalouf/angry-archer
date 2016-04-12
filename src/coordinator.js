@@ -8,7 +8,8 @@ var createGame = function (socket) {
   games[gameID] = {
     id: gameID,
     p1: socket,
-    p2: null
+    p2: null,
+    numReady: 0
   };
   return games[gameID];
 };
