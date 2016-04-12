@@ -94,27 +94,41 @@ function addInteraction (world, Physics) {
     strength: 0.005
   });
   
+  var interactionPoke = function (pos) {
+    // console.log("Literal Mousepos", pos);
+    pos.x *= viewScale;
+    pos.y *= viewScale;
+    // console.log("Shifted Mousepos", pos);
+    // world._bodies.map(function(e) {console.log(e.name, e.state.pos.x, e.state.pos.y)});    
+    world.wakeUpAll();
+    attractor.position(pos);
+    world.add(attractor);
+    if (!isHost) {
+      socket.emit("interaction", { type: "poke", pos: pos });
+    }
+  };
+  
+  var interactionMove = function (pos) {
+    pos.x *= viewScale;
+    pos.y *= viewScale;
+    attractor.position(pos);
+    if (!isHost) {
+      socket.emit("interaction", { type: "move", pos: pos });
+    }
+  };
+
+  var interactionRelease = function () {
+    world.wakeUpAll();
+    world.remove(attractor);
+    if (!isHost) {
+      socket.emit("interaction", { type: "release" });
+    }
+  };
+
   world.on({
-    'interact:poke': function( pos ){
-      // console.log("Literal Mousepos", pos);
-      pos.x = (pos.x * viewScale);
-      pos.y = pos.y * viewScale;
-      // console.log("Shifted Mousepos", pos);
-      // world._bodies.map(function(e) {console.log(e.name, e.state.pos.x, e.state.pos.y)});
-      
-      world.wakeUpAll();
-      attractor.position( pos );
-      world.add( attractor );
-    }
-    ,'interact:move': function( pos ){
-      pos.x = (pos.x * viewScale);
-      pos.y = pos.y * viewScale;
-      attractor.position( pos );
-    }
-    ,'interact:release': function(){
-      world.wakeUpAll();
-      world.remove( attractor );
-    }
+    'interact:poke': interactionPoke,
+    'interact:move': interactionMove,
+    'interact:release': interactionRelease
   });
 }
 
@@ -122,6 +136,15 @@ function addInteraction (world, Physics) {
 function makeBody (obj) { 
   return this.body(obj.name, obj);
 }
+
+function copyBodyState (src, dst) {
+  dst.pos.clone(src.pos);
+  dst.vel.clone(src.vel);
+  dst.acc.clone(src.acc);
+  dst.angular.pos = src.angular.pos;
+  dst.angular.vel = src.angular.vel;
+  dst.angular.acc = src.angular.acc;
+};
 
 /*
   updateWorld(Array[{uid: Number, state: {}}]) -> undefined
@@ -138,7 +161,8 @@ function updateWorld(theirBodies) {
   theirBodies.map(function(theirBody) {
     var myBody;
     if (world._bodies.some(function(el) {myBody = el; return el.uid == theirBody.uid})) {
-      myBody.state = theirBody.state;
+      copyBodyState(theirBody.state, myBody.state);
+      copyBodyState(theirBody.state.old, myBody.state.old);
     } else {
       world.add(theirBody);
     }
