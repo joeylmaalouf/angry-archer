@@ -1,38 +1,38 @@
 var colors = [
-  ["0x268bd2", "0x0d394f"]
-  ,["0xc93b3b", "0x561414"]
-  ,["0xe25e36", "0x79231b"]
-  ,["0x6c71c4", "0x393f6a"]
-  ,["0x58c73c", "0x30641c"]
-  ,["0xcac34c", "0x736a2c"]
+  ["0x268bd2", "0x0d394f"],
+  ["0xc93b3b", "0x561414"],
+  ["0xe25e36", "0x79231b"],
+  ["0x6c71c4", "0x393f6a"],
+  ["0x58c73c", "0x30641c"],
+  ["0xcac34c", "0x736a2c"]
 ];
-var viewXOffset, viewScale;
+var viewXOffset, viewScale, worldHeight;
 function initWorld(world, Physics) {
-  var aspectRatio = 3/1;
+  var aspectRatio = 3 / 1;
   var worldWidth = 1200;
-  var worldHeight = worldWidth/aspectRatio;
+  worldHeight = worldWidth/aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
   // bounds of the window
-  var viewWidth = window.innerWidth * viewWidthPercentage
-    ,viewHeight = viewWidth/aspectRatio
-    ,boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight)
-    ,edgeBounce
-    ,renderer
-    ,styles = {
+  var viewWidth = window.innerWidth * viewWidthPercentage,
+    viewHeight = viewWidth / aspectRatio,
+    boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight),
+    edgeBounce,
+    renderer,
+    styles = {
       "circle": {
         fillStyle: colors[0][0],
         lineWidth: 1,
         strokeStyle: colors[0][1],
         angleIndicator: colors[0][1]
-      }
-      ,"rectangle": {
+      },
+      "rectangle": {
         fillStyle: colors[1][0],
         lineWidth: 1,
         strokeStyle: colors[1][1],
         angleIndicator: colors[1][1]
-      }
-      ,"convex-polygon": {
+      },
+      "convex-polygon": {
         fillStyle: colors[2][0],
         lineWidth: 1,
         strokeStyle: colors[2][1],
@@ -44,7 +44,7 @@ function initWorld(world, Physics) {
   makeRenderer(Physics);
   renderer = Physics.renderer("pixi-scalable", { el: "viewport", styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
   renderer.resize(viewWidth, viewHeight);
-  viewScale = 1/renderer.viewScale;
+  viewScale = 1 / renderer.viewScale;
   world.add(renderer);
   // render on each step
   world.on("step", function () {
@@ -53,9 +53,9 @@ function initWorld(world, Physics) {
   
   // constrain objects to these bounds
   edgeBounce = Physics.behavior("edge-collision-detection", {
-    aabb: boundingBox
-    ,restitution: 0.2
-    ,cof: 0.8
+    aabb: boundingBox,
+    restitution: 0.2,
+    cof: 0.8
   });
 
   // resize events
@@ -63,16 +63,16 @@ function initWorld(world, Physics) {
     viewWidth = window.innerWidth * viewWidthPercentage;
     viewHeight = viewWidth/aspectRatio;
     renderer.resize(viewWidth, viewHeight);
-    viewScale = 1/renderer.viewScale;
+    viewScale = 1 / renderer.viewScale;
   }, true);
 
   // add behaviors to the world
   world.add([
-    Physics.behavior("constant-acceleration")
-    ,Physics.behavior("body-impulse-response")
-    ,Physics.behavior("body-collision-detection")
-    ,Physics.behavior("sweep-prune")
-    ,edgeBounce
+    Physics.behavior("constant-acceleration"),
+    Physics.behavior("body-impulse-response"),
+    Physics.behavior("body-collision-detection"),
+    Physics.behavior("sweep-prune"),
+    edgeBounce
   ]);  
 }
 
@@ -165,12 +165,17 @@ function updateWorld(theirBodies) {
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
-    { name: 'rectangle', x: 120, y: 350, vx: 0, width: 20, height: 100 },
-    { name: 'rectangle', x: 10, y: 350, vx: 0, width: 20, height: 100 },
-    { name: 'rectangle', x: 65, y: 290, vx: 0, width: 130, height: 20 }
+    { name: 'rectangle', x: 120, y: worldHeight - 50, vx: 0, width: 20, height: 100 },
+    { name: 'rectangle', x: 10, y: worldHeight - 50, vx: 0, width: 20, height: 100 },
+    { name: 'rectangle', x: 65, y: worldHeight - 100 - 10, vx: 0, width: 130, height: 20 },
+    { name: 'rectangle', x: 140, y: worldHeight - 30, vx: 0, width: 20, height: 60 },
+    { name: 'rectangle', x: 220, y: worldHeight - 30, vx: 0, width: 20, height: 60 },
+    { name: 'rectangle', x: 183, y: worldHeight - 60 - 10, vx: 0, width: 100, height: 20 },
+    { name: 'rectangle', x: 220, y: worldHeight - 60 - 20 - 42, vx: 0, width: 20, height: 80 },
+    { name: 'rectangle', x: 10, y: worldHeight - 150, vx: 0, width: 20, height: 60 },
   ];
   
-  world.add( bodies.map(makeBody.bind(Physics)) );
+  world.add(bodies.map(makeBody.bind(Physics)));
 }
 
 // Load the libraries with requirejs and create the simulation
@@ -179,7 +184,7 @@ require.config({
 });
 
 // Set global access variables for Physics.js and PIXI renderer
-require(['physicsjs-full.min', 'pixi.min'],
+require(["physicsjs-full.min", "pixi.min"],
 function (Physics, PIXI) {
   window.Physics = Physics;
   window.PIXI = PIXI;
@@ -221,6 +226,6 @@ var createWorld = function() {
 var clearWorld = function() {
   if (window.world) {
     world.destroy();
-    $('#viewport').children(0).remove();
+    $("#viewport").children(0).remove();
   }
 }
