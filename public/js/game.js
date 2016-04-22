@@ -140,6 +140,10 @@ function makeBody (obj) {
   return this.body(obj.name, obj);
 }
 
+/*
+  copyBodyState({src}, {dst}) -> void
+  given two state objects, copy attributes from one to another
+*/
 function copyBodyState (src, dst) {
   dst.pos.clone(src.pos);
   dst.vel.clone(src.vel);
@@ -185,12 +189,11 @@ function updateWorld(theirBodies) {
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
-    { name: 'circle', x: 100, y: 100, vx: 0.1, radius: 60 }
-    ,{ name: 'rectangle', x: 400, y: 100, vx: -0.1, width: 130, height: 130 }
-    ,{ name: 'convex-polygon', x: 150, y: 300, vertices: v( 5, 90 ) }
+    { name: 'rectangle', x: 100, y: 500, vx: 0, width: 10, height: 130 }
+    ,{ name: 'rectangle', x: 5, y: 500, vx: 0, width: 10, height: 130 }
+    ,{ name: 'rectangle', x: 5, y: 450, vx: 0, width: 120, height: 10 }
   ];
   
-  // functional programming FTW
   world.add( bodies.map(makeBody.bind(Physics)) );
 }
 
@@ -199,12 +202,17 @@ require.config({
   baseUrl: 'js/lib'
 });
 
+// Set global access variables for Physics.js and PIXI renderer
 require(['physicsjs-full.min', 'pixi.min'],
 function (Physics, PIXI) {
   window.Physics = Physics;
   window.PIXI = PIXI;
 });
 
+/*
+  createWorld -> void
+  configure and initialize physics world
+*/
 var createWorld = function() {
   var worldConfig = {
     // timestep
@@ -230,6 +238,10 @@ var createWorld = function() {
   ]);
 }
 
+/*
+  clearWorld() -> void
+  If a physics world exists, destroy it and remove its canvas element from the page
+*/
 var clearWorld = function() {
   if (window.world) {
     world.destroy();
