@@ -1,38 +1,38 @@
 var colors = [
-  ["0x268bd2", "0x0d394f"]
-  ,["0xc93b3b", "0x561414"]
-  ,["0xe25e36", "0x79231b"]
-  ,["0x6c71c4", "0x393f6a"]
-  ,["0x58c73c", "0x30641c"]
-  ,["0xcac34c", "0x736a2c"]
+  ["0x268bd2", "0x0d394f"],
+  ["0xc93b3b", "0x561414"],
+  ["0xe25e36", "0x79231b"],
+  ["0x6c71c4", "0x393f6a"],
+  ["0x58c73c", "0x30641c"],
+  ["0xcac34c", "0x736a2c"]
 ];
 var viewXOffset, viewScale;
 function initWorld(world, Physics) {
-  var aspectRatio = 3/1;
+  var aspectRatio = 3 / 1;
   var worldWidth = 1200;
   var worldHeight = worldWidth/aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
   // bounds of the window
-  var viewWidth = window.innerWidth * viewWidthPercentage
-    ,viewHeight = viewWidth/aspectRatio
-    ,boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight)
-    ,edgeBounce
-    ,renderer
-    ,styles = {
+  var viewWidth = window.innerWidth * viewWidthPercentage,
+    viewHeight = viewWidth / aspectRatio,
+    boundingBox = Physics.aabb(0, 0, worldWidth, worldHeight),
+    edgeBounce,
+    renderer,
+    styles = {
       "circle": {
         fillStyle: colors[0][0],
         lineWidth: 1,
         strokeStyle: colors[0][1],
         angleIndicator: colors[0][1]
-      }
-      ,"rectangle": {
+      },
+      "rectangle": {
         fillStyle: colors[1][0],
         lineWidth: 1,
         strokeStyle: colors[1][1],
         angleIndicator: colors[1][1]
-      }
-      ,"convex-polygon": {
+      },
+      "convex-polygon": {
         fillStyle: colors[2][0],
         lineWidth: 1,
         strokeStyle: colors[2][1],
@@ -44,7 +44,7 @@ function initWorld(world, Physics) {
   makeRenderer(Physics);
   renderer = Physics.renderer("pixi-scalable", { el: "viewport", styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
   renderer.resize(viewWidth, viewHeight);
-  viewScale = 1/renderer.viewScale;
+  viewScale = 1 / renderer.viewScale;
   world.add(renderer);
   // render on each step
   world.on("step", function () {
@@ -53,9 +53,9 @@ function initWorld(world, Physics) {
   
   // constrain objects to these bounds
   edgeBounce = Physics.behavior("edge-collision-detection", {
-    aabb: boundingBox
-    ,restitution: 0.2
-    ,cof: 0.8
+    aabb: boundingBox,
+    restitution: 0.2,
+    cof: 0.8
   });
 
   // resize events
@@ -63,16 +63,16 @@ function initWorld(world, Physics) {
     viewWidth = window.innerWidth * viewWidthPercentage;
     viewHeight = viewWidth/aspectRatio;
     renderer.resize(viewWidth, viewHeight);
-    viewScale = 1/renderer.viewScale;
+    viewScale = 1 / renderer.viewScale;
   }, true);
 
   // add behaviors to the world
   world.add([
-    Physics.behavior("constant-acceleration")
-    ,Physics.behavior("body-impulse-response")
-    ,Physics.behavior("body-collision-detection")
-    ,Physics.behavior("sweep-prune")
-    ,edgeBounce
+    Physics.behavior("constant-acceleration"),
+    Physics.behavior("body-impulse-response"),
+    Physics.behavior("body-collision-detection"),
+    Physics.behavior("sweep-prune"),
+    edgeBounce
   ]);  
 }
 
@@ -161,9 +161,9 @@ function updateWorld(theirBodies) {
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
-    { name: "circle", x: 100, y: 100, vx: 0.1, radius: 60 }
-    ,{ name: "rectangle", x: 400, y: 100, vx: -0.1, width: 130, height: 130 }
-    ,{ name: "convex-polygon", x: 150, y: 300, vertices: v(5, 90) }
+    { name: "circle", x: 100, y: 100, vx: 0.1, radius: 60 },
+    { name: "rectangle", x: 400, y: 100, vx: -0.1, width: 130, height: 130 },
+    { name: "convex-polygon", x: 150, y: 300, vertices: v(5, 90) }
   ];
   
   // functional programming FTW
