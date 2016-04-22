@@ -1,5 +1,5 @@
 var socket = io.connect();
-var messageText, createGameText, joinGameText;
+var messageText, createGameText, joinGameText, IDText;
 var createGameButton, joinGameButton, endGameButton;
 var viewport;
 var inGame;
@@ -8,6 +8,7 @@ $(document).ready(function () {
   messageText = $("#messageText");
   createGameText = $("#createGameText");
   joinGameText = $("#joinGameText");
+  IDText = $("#IDText");
   createGameButton = $("#createGameButton");
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
@@ -45,6 +46,7 @@ $(document).keydown(function (event) {
 var joinLobby = function (data) {
   clearWorld();
   messageText.text("You are not currently in a game.");
+  IDText.hide().val("");
   createGameText.text("");
   joinGameText.val("");
   createGameButton.prop("disabled", false);
@@ -56,7 +58,8 @@ var joinLobby = function (data) {
 };
 
 var joinWaiting = function (data) {
-  messageText.text("Your game ID is: " + data.gameID);
+  messageText.text("Your game ID is: ");
+  IDText.show().val(data.gameID);
   createGameText.text("Waiting for player " + data.otherPlayer + "...");
   joinGameText.val("");
   createGameButton.prop("disabled", true);
