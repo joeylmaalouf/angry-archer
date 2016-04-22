@@ -203,6 +203,9 @@ require(['physicsjs-full.min', 'pixi.min'],
 function (Physics, PIXI) {
   window.Physics = Physics;
   window.PIXI = PIXI;
+});
+
+var createWorld = function() {
   var worldConfig = {
     // timestep
     timestep: 6,
@@ -225,4 +228,11 @@ function (Physics, PIXI) {
     addBodies,
     startWorld
   ]);
-});
+}
+
+var clearWorld = function() {
+  if (window.world) {
+    world.destroy();
+    $('#viewport').children(0).remove();
+  }
+}

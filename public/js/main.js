@@ -46,6 +46,7 @@ $(document).keydown(function (event) {
 });
 
 var joinLobby = function (data) {
+  clearWorld();
   messageText.text("You are not currently in a game.");
   createGameText.text("");
   joinGameText.val("");
@@ -84,9 +85,14 @@ var stopGame = function (data) {
 };
 
 var beginWorld = function (data) {
+  createWorld();
   createGameText.text("Welcome to Angry Archer!");
   socket.emit("play game", {});
 };
+
+var endWorld = function() {
+  world.remove
+}
 
 var getWorld = function (data) {
   var state = $.map(world._bodies, function (value) {
