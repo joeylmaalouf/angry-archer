@@ -86,12 +86,12 @@ var bindSockets = function (io) {
     };
     
     var beginWorld = function (data) {
-      var delay = 100;
+      var delay = 1000;
       if (++socket.game.numReady == 2) {
         socket.game.p1.emit("begin simulation", {});
         socket.game.p2.emit("begin simulation", {});
         socket.game.p1.intervalID = setInterval(function () {
-          if (socket.game.p1) {
+          if (socket.game && socket.game.p1) {
             socket.game.p1.emit("get world state", { player: 1 });
           }
         }, delay);
@@ -101,11 +101,11 @@ var bindSockets = function (io) {
               socket.game.p2.emit("get world state", { player: 2 });
             }
           }, delay);
-        }, delay/2); */
+        }, delay / 2); */
       }
     };
 
-    var updateWorld = function (data) {
+    var sendState = function (data) {
       if (socket.game) {
         if (data.player == 1 && socket.game.p2) {
           socket.game.p2.emit("set world state", data);
@@ -116,9 +116,14 @@ var bindSockets = function (io) {
       }
     };
 
-    var transferInput = function (data) {
+    var sendInput = function (data) {
       if (socket.game) {
-        socket.game.p1.emit("interaction", data);
+        if (socket.game.p1) {
+          socket.game.p1.emit("interaction", data);
+        }
+        if (socket.game.p2) {
+          socket.game.p2.emit("interaction", data);
+        }
       }
     };
 
@@ -128,8 +133,8 @@ var bindSockets = function (io) {
     socket.on("play game", playGame);
     socket.on("pause game", pauseGame);
     socket.on("player ready", beginWorld);
-    socket.on("world state", updateWorld);
-    socket.on("interaction", transferInput);
+    socket.on("world state", sendState);
+    socket.on("interaction", sendInput);
     socket.on("disconnect", endGame);
   });
 };

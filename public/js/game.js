@@ -1,10 +1,10 @@
 var colors = [
-  ['0x268bd2', '0x0d394f']
-  ,['0xc93b3b', '0x561414']
-  ,['0xe25e36', '0x79231b']
-  ,['0x6c71c4', '0x393f6a']
-  ,['0x58c73c', '0x30641c']
-  ,['0xcac34c', '0x736a2c']
+  ["0x268bd2", "0x0d394f"]
+  ,["0xc93b3b", "0x561414"]
+  ,["0xe25e36", "0x79231b"]
+  ,["0x6c71c4", "0x393f6a"]
+  ,["0x58c73c", "0x30641c"]
+  ,["0xcac34c", "0x736a2c"]
 ];
 var viewXOffset, viewScale;
 function initWorld(world, Physics) {
@@ -20,19 +20,19 @@ function initWorld(world, Physics) {
     ,edgeBounce
     ,renderer
     ,styles = {
-      'circle': {
+      "circle": {
         fillStyle: colors[0][0],
         lineWidth: 1,
         strokeStyle: colors[0][1],
         angleIndicator: colors[0][1]
       }
-      ,'rectangle': {
+      ,"rectangle": {
         fillStyle: colors[1][0],
         lineWidth: 1,
         strokeStyle: colors[1][1],
         angleIndicator: colors[1][1]
       }
-      ,'convex-polygon': {
+      ,"convex-polygon": {
         fillStyle: colors[2][0],
         lineWidth: 1,
         strokeStyle: colors[2][1],
@@ -42,24 +42,24 @@ function initWorld(world, Physics) {
 
   // add the renderer
   makeRenderer(Physics);
-  renderer = Physics.renderer('pixi-scalable', { el: 'viewport', styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
+  renderer = Physics.renderer("pixi-scalable", { el: "viewport", styles: styles, worldsize: {w: worldWidth, h: worldHeight} });
   renderer.resize(viewWidth, viewHeight);
   viewScale = 1/renderer.viewScale;
   world.add(renderer);
   // render on each step
-  world.on('step', function () {
+  world.on("step", function () {
     world.render();
   });
   
   // constrain objects to these bounds
-  edgeBounce = Physics.behavior('edge-collision-detection', {
+  edgeBounce = Physics.behavior("edge-collision-detection", {
     aabb: boundingBox
     ,restitution: 0.2
     ,cof: 0.8
   });
 
   // resize events
-  window.addEventListener('resize', function () {
+  window.addEventListener("resize", function () {
     viewWidth = window.innerWidth * viewWidthPercentage;
     viewHeight = viewWidth/aspectRatio;
     renderer.resize(viewWidth, viewHeight);
@@ -68,18 +68,18 @@ function initWorld(world, Physics) {
 
   // add behaviors to the world
   world.add([
-    Physics.behavior('constant-acceleration')
-    ,Physics.behavior('body-impulse-response')
-    ,Physics.behavior('body-collision-detection')
-    ,Physics.behavior('sweep-prune')
+    Physics.behavior("constant-acceleration")
+    ,Physics.behavior("body-impulse-response")
+    ,Physics.behavior("body-collision-detection")
+    ,Physics.behavior("sweep-prune")
     ,edgeBounce
   ]);  
 }
 
 function startWorld (world, Physics) {
   // subscribe to ticker to advance the simulation
-  Physics.util.ticker.on(function( time ) {
-    world.step( time );
+  Physics.util.ticker.on(function (time) {
+    world.step(time);
   });
   window.world = world;
 }
@@ -87,51 +87,27 @@ function startWorld (world, Physics) {
 // Add some interaction
 function addInteraction (world, Physics) {
   // add the mouse interaction
-  world.add(Physics.behavior('interactive', { el: world.renderer().container }));
+  world.add(Physics.behavior("interactive", { el: world.renderer().container }));
   // add some fun extra interaction
-  var attractor = Physics.behavior('attractor', {
+  var attractor = Physics.behavior("attractor", {
     order: 0,
     strength: 0.005
   });
-  
-  var interactionPoke = function (pos) {
-    // console.log("Literal Mousepos", pos);
-    pos.x *= viewScale;
-    pos.y *= viewScale;
-    // console.log("Shifted Mousepos", pos);
-    // world._bodies.map(function(e) {console.log(e.name, e.state.pos.x, e.state.pos.y)});    
-    if (!isHost) {
-      socket.emit("interaction", { type: "poke", pos: pos });
-    } else {
-      world.wakeUpAll();
-      attractor.position(pos);
-      world.add(attractor);
-    }
-  };
-  
-  var interactionMove = function (pos) {
-    pos.x *= viewScale;
-    pos.y *= viewScale;
-    if (!isHost) {
-      socket.emit("interaction", { type: "move", pos: pos });
-    } else {
-      attractor.position(pos);
-    }
-  };
-
-  var interactionRelease = function () {
-    world.wakeUpAll();
-    if (!isHost) {
-      socket.emit("interaction", { type: "release" });
-    } else {
-      world.remove(attractor);
-    }
-  };
 
   world.on({
-    'interact:poke': interactionPoke,
-    'interact:move': interactionMove,
-    'interact:release': interactionRelease
+    "interact:poke": function (pos) {
+      pos.x *= viewScale;
+      pos.y *= viewScale;
+      socket.emit("interaction", { type: "poke", pos: pos });
+    },
+    "interact:move": function (pos) {
+      pos.x *= viewScale;
+      pos.y *= viewScale;
+      socket.emit("interaction", { type: "move", pos: pos });
+    },
+    "interact:release": function () {
+      socket.emit("interaction", { type: "release" });
+    }
   });
 }
 
@@ -172,7 +148,7 @@ function updateWorld(theirBodies) {
   });
 
   // Remove Bodies
-  for (var i = world._bodies.length-1; i >= 0; i--) {
+  for (var i = world._bodies.length - 1; i >= 0; --i) {
     var myBody = world._bodies[i];
     var theirBody;
     if (!theirBodies.some(function(el) {theirBody = el; return el.uid == myBody.uid})) {
@@ -185,21 +161,21 @@ function updateWorld(theirBodies) {
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
-    { name: 'circle', x: 100, y: 100, vx: 0.1, radius: 60 }
-    ,{ name: 'rectangle', x: 400, y: 100, vx: -0.1, width: 130, height: 130 }
-    ,{ name: 'convex-polygon', x: 150, y: 300, vertices: v( 5, 90 ) }
+    { name: "circle", x: 100, y: 100, vx: 0.1, radius: 60 }
+    ,{ name: "rectangle", x: 400, y: 100, vx: -0.1, width: 130, height: 130 }
+    ,{ name: "convex-polygon", x: 150, y: 300, vertices: v(5, 90) }
   ];
   
   // functional programming FTW
-  world.add( bodies.map(makeBody.bind(Physics)) );
+  world.add(bodies.map(makeBody.bind(Physics)));
 }
 
 // Load the libraries with requirejs and create the simulation
 require.config({
-  baseUrl: 'js/lib'
+  baseUrl: "js/lib"
 });
 
-require(['physicsjs-full.min', 'pixi.min'],
+require(["physicsjs-full.min", "pixi.min"],
 function (Physics, PIXI) {
   window.Physics = Physics;
   window.PIXI = PIXI;
@@ -212,7 +188,7 @@ var createWorld = function() {
     // maximum number of iterations per step
     maxIPF: 4,
     // default integrator
-    integrator: 'verlet',
+    integrator: "verlet",
     // is sleeping disabled?
     sleepDisabled: false,
     // speed at which bodies wake up
