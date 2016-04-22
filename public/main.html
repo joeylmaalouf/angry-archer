@@ -19,7 +19,7 @@
       </div>
       <div class="navbar-center navbar-form">
         <div class="form-group">
-          <input id="joinGameText" type="text" autocomplete="off" class="form-control">
+          <input id="joinGameText" type="text" class="form-control" autocomplete="off">
         </div>
         <input id="joinGameButton" type="button" class="btn btn-default navbar-btn" value="Join game">
       </div>
@@ -27,7 +27,9 @@
         <input id="endGameButton" type="button" class="btn btn-default navbar-btn" value="End game">
       </div>
     </nav>
-    <a id="messageText"></a>
+    <div class="form-inline">
+      <a id="messageText"></a><input id="IDText" type="text" class="form-control" readonly="readonly" onclick="this.select();"> 
+    </div>
     <br>
     <a id="createGameText"></a>
     <br>
