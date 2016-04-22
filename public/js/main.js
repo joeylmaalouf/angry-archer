@@ -2,7 +2,7 @@ var socket = io.connect();
 var messageText, createGameText, joinGameText;
 var createGameButton, joinGameButton, endGameButton;
 var viewport;
-var isHost, inGame;
+var inGame;
 
 $(document).ready(function () {
   messageText = $("#messageText");
@@ -14,17 +14,14 @@ $(document).ready(function () {
   viewport = $("#viewport");
   
   createGameButton.click(function () {
-    isHost = true;
     socket.emit("create game", {});
   });
 
   joinGameButton.click(function () {
-    isHost = false;
     socket.emit("join game", { gameID: joinGameText.val().replace(/\s+/g, "") });
   });
 
   endGameButton.click(function () {
-    isHost = undefined;
     socket.emit("end game", {});
   });
   
@@ -130,7 +127,7 @@ var interactionPoke = function (pos) {
   world.wakeUpAll();
   attractor.position(pos);
   world.add(attractor);
-  attractorIndex = world._behaviors.length-1;
+  attractorIndex = world._behaviors.length - 1;
 };
 var interactionMove = function (pos) {
   attractor.position(pos);
