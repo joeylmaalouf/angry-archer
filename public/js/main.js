@@ -92,6 +92,10 @@ var getWorld = function (data) {
   var state = $.map(world._bodies, function (value) {
     return {
       uid: value.uid,
+      name: value.name,
+      radius: value.radius,
+      height: value.height,
+      width: value.width,
       state: value.state
     };
   });
@@ -123,7 +127,7 @@ var attractor, attractorIndex;
 setInterval(function () {
   attractor = Physics.behavior("attractor", {
     order: 0,
-    strength: 0.005
+    strength: 0.00
   });
 }, 500);
 var interactionPoke = function (pos) {

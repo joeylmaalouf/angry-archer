@@ -91,7 +91,7 @@ function addInteraction (world, Physics) {
   // add some fun extra interaction
   var attractor = Physics.behavior('attractor', {
     order: 0,
-    strength: 0.005
+    strength: 0.00
   });
   
   var interactionPoke = function (pos) {
@@ -103,10 +103,12 @@ function addInteraction (world, Physics) {
     if (!isHost) {
       socket.emit("interaction", { type: "poke", pos: pos });
     } else {
+      world.add(Physics.body("circle", { name: 'circle', x: pos.x, y: pos.y, vx: 0.1, radius: 60 }));
       world.wakeUpAll();
       attractor.position(pos);
       world.add(attractor);
     }
+    
   };
   
   var interactionMove = function (pos) {
@@ -167,7 +169,8 @@ function updateWorld(theirBodies) {
       copyBodyState(theirBody.state, myBody.state);
       copyBodyState(theirBody.state.old, myBody.state.old);
     } else {
-      world.add(theirBody);
+      console.log("Adding body", theirBody);
+      world.add(Physics.body(theirBody.name, theirBody));
     }
   });
 
