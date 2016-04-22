@@ -165,9 +165,9 @@ function updateWorld(theirBodies) {
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
   var bodies = [
-    { name: 'rectangle', x: 100, y: 500, vx: 0, width: 10, height: 130 }
-    ,{ name: 'rectangle', x: 5, y: 500, vx: 0, width: 10, height: 130 }
-    ,{ name: 'rectangle', x: 5, y: 450, vx: 0, width: 120, height: 10 }
+    { name: 'rectangle', x: 120, y: 350, vx: 0, width: 20, height: 100 },
+    { name: 'rectangle', x: 10, y: 350, vx: 0, width: 20, height: 100 },
+    { name: 'rectangle', x: 65, y: 290, vx: 0, width: 130, height: 20 }
   ];
   
   world.add( bodies.map(makeBody.bind(Physics)) );
