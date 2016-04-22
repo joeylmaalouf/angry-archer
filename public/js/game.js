@@ -170,7 +170,7 @@ function addBodies (world, Physics) {
     { name: "rectangle", x:   5, y: 450, vx: 0, width: 120, height:  10 }
   ];
   
-  world.add( bodies.map(makeBody.bind(Physics)) );
+  world.add(bodies.map(makeBody.bind(Physics)));
 }
 
 // Load the libraries with requirejs and create the simulation
