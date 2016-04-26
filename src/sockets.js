@@ -125,14 +125,14 @@ var bindSockets = function (io) {
       }
     };
 
-    var makeSoldier = function (data) {
+    var makeEntity = function (data) {
       if (socket.game) {
-        var isLeft = socket.player === 1;
+        data.isLeft = (socket.player === 1);
         if (socket.game.p1) {
-          socket.game.p1.emit("soldier spawned", { isLeft: isLeft });
+          socket.game.p1.emit(data.type + " spawned", data);
         }
         if (socket.game.p2) {
-          socket.game.p2.emit("soldier spawned", { isLeft: isLeft });
+          socket.game.p2.emit(data.type + " spawned", data);
         }
       }
     };
@@ -145,7 +145,7 @@ var bindSockets = function (io) {
     socket.on("player ready", beginWorld);
     socket.on("world state", sendState);
     socket.on("interaction", sendInput);
-    socket.on("spawn soldier", makeSoldier)
+    socket.on("spawn entity", makeEntity)
     socket.on("disconnect", endGame);
   });
 };

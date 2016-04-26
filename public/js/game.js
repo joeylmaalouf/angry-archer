@@ -10,7 +10,7 @@ var viewXOffset, viewScale, worldHeight;
 var worldWidth = 1200;
 function initWorld(world, Physics) {
   var aspectRatio = 3 / 1;
-  worldHeight = worldWidth/aspectRatio;
+  worldHeight = worldWidth / aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
   // bounds of the window
@@ -88,25 +88,12 @@ function startWorld (world, Physics) {
 function addInteraction (world, Physics) {
   // add the mouse interaction
   world.add(Physics.behavior("interactive", { el: world.renderer().container }));
-  // add some fun extra interaction
-  var attractor = Physics.behavior("attractor", {
-    order: 0,
-    strength: 0.005
-  });
 
   world.on({
     "interact:poke": function (pos) {
       pos.x *= viewScale;
       pos.y *= viewScale;
-      socket.emit("interaction", { type: "poke", pos: pos });
-    },
-    "interact:move": function (pos) {
-      pos.x *= viewScale;
-      pos.y *= viewScale;
-      socket.emit("interaction", { type: "move", pos: pos });
-    },
-    "interact:release": function () {
-      socket.emit("interaction", { type: "release" });
+      socket.emit("spawn entity", { type: "arrow", target: pos, width: worldWidth });
     }
   });
 }
@@ -186,20 +173,20 @@ var makeFort = function (isLeft) {
     { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20 },
     { name: 'rectangle', x: offset(170), y: worldHeight - 121, width: 20, height: 80 },
     { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20 },
-    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
-    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
+    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
   ];
 }
 
-var addSoldier = function (isLeft) {
-  var soldier = { name: 'circle', x: (isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
+var hireSoldier = function (data) {
+  var soldier = { name: 'circle', x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
   addBodies([soldier], world, Physics);
 };
 
-var fireArrow = function(leftSide, ang, vel) {
+var fireArrow = function (isLeft, ang, vel) {
   world.add(Physics.body('compound', {
-    x: leftSide ? 170 : worldWidth - 170,
+    x: isLeft ? 170 : worldWidth - 170,
     y: worldHeight - 200,
     vx: vel * Math.cos(ang),
     vy: vel * Math.sin(ang),
