@@ -162,28 +162,19 @@ function updateWorld(theirBodies) {
 }
 
 // Add bodies to the world
-function addBodies (world, Physics) {
-  var v = Physics.geometry.regularPolygonVertices;
-  var bodies = makeForts();
-  
+function addBodies (bodies, world, Physics) {
   world.add(bodies.map(makeBody.bind(Physics)));
 }
 
-var makeForts = function() {
+function addForts (world, Physics) {
   var bodies = [];
-  console.log(bodies);
   $.merge(bodies, makeFort(true));
-  console.log(bodies);
   $.merge(bodies, makeFort(false));
-  console.log(bodies);
-  return bodies;
+  addBodies(bodies, world, Physics);
 }
 
-var makeFort = function(leftSide) {
-  var offset = function (x) {
-    return leftSide ? x : worldWidth - x;
-  }
-
+var makeFort = function (isLeft) {
+  var offset = function (x) { return isLeft ? x : worldWidth - x; };
   return [
     { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100 },
     { name: 'rectangle', x: offset(90), y: worldHeight - 50, width: 20, height: 100 },
@@ -192,8 +183,12 @@ var makeFort = function(leftSide) {
     { name: 'rectangle', x: offset(170), y: worldHeight - 30, width: 20, height: 60 },
     { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20 }
   ];
-
 }
+
+var addSoldier = function (isLeft, world, Physics) {
+  var soldier = { name: 'circle', x: (isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
+  addBodies([soldier], world, Physics);
+};
 
 // Load the libraries with requirejs and create the simulation
 require.config({
@@ -231,7 +226,7 @@ var createWorld = function() {
   Physics(worldConfig, [
     initWorld,
     addInteraction,
-    addBodies,
+    addForts,
     startWorld
   ]);
 }

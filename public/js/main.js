@@ -1,6 +1,6 @@
 var socket = io.connect();
 var messageText, createGameText, joinGameText, IDText;
-var createGameButton, joinGameButton, endGameButton;
+var createGameButton, joinGameButton, endGameButton, soldierButton;
 var viewport;
 var inGame;
 
@@ -12,6 +12,7 @@ $(document).ready(function () {
   createGameButton = $("#createGameButton");
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
+  soldierButton = $("#soldierButton");
   viewport = $("#viewport");
   
   createGameButton.click(function () {
@@ -25,7 +26,11 @@ $(document).ready(function () {
   endGameButton.click(function () {
     socket.emit("end game", {});
   });
-  
+
+  soldierButton.click(function () {
+    socket.emit("spawn soldier", {});
+  });
+
   joinLobby({});
 });
 
@@ -90,10 +95,6 @@ var beginWorld = function (data) {
   socket.emit("play game", {});
 };
 
-var endWorld = function() {
-  world.remove
-}
-
 var getWorld = function (data) {
   var state = $.map(world._bodies, function (value) {
     return {
@@ -102,7 +103,6 @@ var getWorld = function (data) {
     };
   });
   socket.emit("world state", {
-    player: data.player,
     world: state
   });
 };
@@ -146,6 +146,10 @@ var interactionRelease = function () {
   world.remove(world._behaviors[attractorIndex]);
 };
 
+var spawnSoldier = function (data) {
+  addSoldier(data.isLeft, world, Physics);
+};
+
 socket.on("create game success", joinWaiting);
 socket.on("create game failure", function (data) { alert("Error: failed to create game."); });
 socket.on("join game success", joinWaiting);
@@ -160,3 +164,4 @@ socket.on("begin simulation", beginWorld);
 socket.on("get world state", getWorld);
 socket.on("set world state", setWorld);
 socket.on("interaction", parseInput);
+socket.on("soldier spawned", spawnSoldier);
