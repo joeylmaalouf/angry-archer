@@ -7,9 +7,9 @@ var colors = [
   ["0xcac34c", "0x736a2c"]
 ];
 var viewXOffset, viewScale, worldHeight;
+var worldWidth = 1200;
 function initWorld(world, Physics) {
   var aspectRatio = 3 / 1;
-  var worldWidth = 1200;
   worldHeight = worldWidth/aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
@@ -164,18 +164,35 @@ function updateWorld(theirBodies) {
 // Add bodies to the world
 function addBodies (world, Physics) {
   var v = Physics.geometry.regularPolygonVertices;
-  var bodies = [
-    { name: 'rectangle', x: 120, y: worldHeight - 50, vx: 0, width: 20, height: 100 },
-    { name: 'rectangle', x: 10, y: worldHeight - 50, vx: 0, width: 20, height: 100 },
-    { name: 'rectangle', x: 65, y: worldHeight - 100 - 10, vx: 0, width: 130, height: 20 },
-    { name: 'rectangle', x: 140, y: worldHeight - 30, vx: 0, width: 20, height: 60 },
-    { name: 'rectangle', x: 220, y: worldHeight - 30, vx: 0, width: 20, height: 60 },
-    { name: 'rectangle', x: 183, y: worldHeight - 60 - 10, vx: 0, width: 100, height: 20 },
-    { name: 'rectangle', x: 220, y: worldHeight - 60 - 20 - 42, vx: 0, width: 20, height: 80 },
-    { name: 'rectangle', x: 10, y: worldHeight - 150, vx: 0, width: 20, height: 60 },
-  ];
+  var bodies = makeForts();
   
   world.add(bodies.map(makeBody.bind(Physics)));
+}
+
+var makeForts = function() {
+  var bodies = [];
+  console.log(bodies);
+  $.merge(bodies, makeFort(true));
+  console.log(bodies);
+  $.merge(bodies, makeFort(false));
+  console.log(bodies);
+  return bodies;
+}
+
+var makeFort = function(leftSide) {
+  var offset = function (x) {
+    return leftSide ? x : worldWidth - x;
+  }
+
+  return [
+    { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100 },
+    { name: 'rectangle', x: offset(90), y: worldHeight - 50, width: 20, height: 100 },
+    { name: 'rectangle', x: offset(50), y: worldHeight - 110, width: 100, height: 20 },
+    { name: 'rectangle', x: offset(110), y: worldHeight - 30, width: 20, height: 60 },
+    { name: 'rectangle', x: offset(170), y: worldHeight - 30, width: 20, height: 60 },
+    { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20 }
+  ];
+
 }
 
 // Load the libraries with requirejs and create the simulation
