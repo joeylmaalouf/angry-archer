@@ -96,17 +96,22 @@ function addInteraction (world, Physics) {
 
   world.on({
     "interact:poke": function (pos) {
-      pos.x *= viewScale;
-      pos.y *= viewScale;
-      socket.emit("interaction", { type: "poke", pos: pos });
+      // pos.x *= viewScale;
+      // pos.y *= viewScale;
+      // socket.emit("interaction", { type: "poke", pos: pos });
     },
     "interact:move": function (pos) {
+      // pos.x *= viewScale;
+      // pos.y *= viewScale;
+      // socket.emit("interaction", { type: "move", pos: pos });
+    },
+    "interact:release": function (pos) {
       pos.x *= viewScale;
       pos.y *= viewScale;
-      socket.emit("interaction", { type: "move", pos: pos });
-    },
-    "interact:release": function () {
-      socket.emit("interaction", { type: "release" });
+      socket.emit("arrow", {
+        pos: pos
+      });
+      // socket.emit("interaction", { type: "release" });
     }
   });
 }
@@ -147,7 +152,6 @@ function updateWorld(theirBodies) {
       copyBodyState(theirBody.state, myBody.state);
       copyBodyState(theirBody.state.old, myBody.state.old);
     } else {
-      console.log(theirBody);
       world.add(theirBody);
     }
   });

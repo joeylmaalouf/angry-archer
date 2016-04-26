@@ -127,6 +127,10 @@ var bindSockets = function (io) {
       }
     };
 
+    var fireArrow = function(data) {
+
+    }
+
     socket.on("create game", createGame);
     socket.on("join game", joinGame);
     socket.on("end game", endGame);
@@ -136,6 +140,7 @@ var bindSockets = function (io) {
     socket.on("world state", sendState);
     socket.on("interaction", sendInput);
     socket.on("disconnect", endGame);
+    socket.on("arrow", fireArrow);
   });
 };
 
