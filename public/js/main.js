@@ -147,7 +147,7 @@ var interactionRelease = function () {
 };
 
 var spawnSoldier = function (data) {
-  addSoldier(data.isLeft, world, Physics);
+  addSoldier(data.isLeft);
 };
 
 socket.on("create game success", joinWaiting);
