@@ -10,7 +10,7 @@ var viewXOffset, viewScale, worldHeight;
 var worldWidth = 1200;
 function initWorld(world, Physics) {
   var aspectRatio = 3 / 1;
-  worldHeight = worldWidth/aspectRatio;
+  worldHeight = worldWidth / aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
   // bounds of the window
@@ -88,30 +88,12 @@ function startWorld (world, Physics) {
 function addInteraction (world, Physics) {
   // add the mouse interaction
   world.add(Physics.behavior("interactive", { el: world.renderer().container }));
-  // add some fun extra interaction
-  var attractor = Physics.behavior("attractor", {
-    order: 0,
-    strength: 0.005
-  });
 
   world.on({
-    "interact:poke": function (pos) {
-      // pos.x *= viewScale;
-      // pos.y *= viewScale;
-      // socket.emit("interaction", { type: "poke", pos: pos });
-    },
-    "interact:move": function (pos) {
-      // pos.x *= viewScale;
-      // pos.y *= viewScale;
-      // socket.emit("interaction", { type: "move", pos: pos });
-    },
     "interact:release": function (pos) {
       pos.x *= viewScale;
       pos.y *= viewScale;
-      socket.emit("arrow", {
-        pos: pos
-      });
-      // socket.emit("interaction", { type: "release" });
+      socket.emit("spawn entity", { type: "arrow", target: pos });
     }
   });
 }
@@ -167,25 +149,19 @@ function updateWorld(theirBodies) {
 }
 
 // Add bodies to the world
-function addBodies (world, Physics) {
-  var v = Physics.geometry.regularPolygonVertices;
-  var bodies = makeForts();
-  
+function addBodies (bodies, world, Physics) {
   world.add(bodies.map(makeBody.bind(Physics)));
 }
 
-var makeForts = function() {
+function addForts (world, Physics) {
   var bodies = [];
   $.merge(bodies, makeFort(true));
   $.merge(bodies, makeFort(false));
-  return bodies;
+  addBodies(bodies, world, Physics);
 }
 
-var makeFort = function(leftSide) {
-  var offset = function (x) {
-    return leftSide ? x : worldWidth - x;
-  }
-
+var makeFort = function (isLeft) {
+  var offset = function (x) { return isLeft ? x : worldWidth - x; };
   return [
     { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100 },
     { name: 'rectangle', x: offset(10), y: worldHeight - 130, width: 20, height: 40 },
@@ -196,19 +172,29 @@ var makeFort = function(leftSide) {
     { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20 },
     { name: 'rectangle', x: offset(170), y: worldHeight - 121, width: 20, height: 80 },
     { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20 },
-    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
-    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: {fillStyle: '0xffcc00'}},
+    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
   ];
-
 }
 
-var fireArrow = function(leftSide, ang, vel) {
+var hireSoldier = function (data) {
+  var soldier = { name: 'circle', x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
+  addBodies([soldier], world, Physics);
+};
+
+var fireArrow = function (data) {
+  var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200};
+  var trace = {x: data.target.x - origin.x, y: data.target.y - origin.y};
+  var ang = data.isLeft ? Math.atan(trace.y / trace.x) : Math.atan(trace.y / trace.x) + Math.PI;
+  var vel = Math.sqrt(Math.pow(trace.x, 2) + Math.pow(trace.y, 2)) * 0.005;
+
   world.add(Physics.body('compound', {
-    x: leftSide ? 170 : worldWidth - 170,
-    y: worldHeight - 200,
+    x: origin.x,
+    y: origin.y,
     vx: vel * Math.cos(ang),
     vy: vel * Math.sin(ang),
+    angle: ang,
     treatment: 'dynamic',
     styles: {fillStyle: '0xffffff'},
     children: [
@@ -292,7 +278,7 @@ var createWorld = function() {
   Physics(worldConfig, [
     initWorld,
     addInteraction,
-    addBodies,
+    addForts,
     startWorld
   ]);
 }

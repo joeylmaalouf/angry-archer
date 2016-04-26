@@ -5,6 +5,7 @@ var games = {};
 
 var createGame = function (socket) {
   var gameID = shortid.generate();
+  socket.player = 1;
   games[gameID] = {
     id: gameID,
     p1: socket,
@@ -16,6 +17,7 @@ var createGame = function (socket) {
 
 var joinGame = function (socket, gameID) {
   if (gameID in games) {
+    socket.player = 2;
     games[gameID].p2 = socket;
   }
   return games[gameID];

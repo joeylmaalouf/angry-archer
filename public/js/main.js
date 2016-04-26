@@ -1,6 +1,6 @@
 var socket = io.connect();
 var messageText, createGameText, joinGameText, IDText;
-var createGameButton, joinGameButton, endGameButton;
+var createGameButton, joinGameButton, endGameButton, soldierButton;
 var viewport;
 var inGame;
 
@@ -12,6 +12,7 @@ $(document).ready(function () {
   createGameButton = $("#createGameButton");
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
+  soldierButton = $("#soldierButton");
   viewport = $("#viewport");
   
   createGameButton.click(function () {
@@ -25,7 +26,11 @@ $(document).ready(function () {
   endGameButton.click(function () {
     socket.emit("end game", {});
   });
-  
+
+  soldierButton.click(function () {
+    socket.emit("spawn entity", { type: "soldier" });
+  });
+
   joinLobby({});
 });
 
@@ -44,7 +49,6 @@ $(document).keydown(function (event) {
 });
 
 var joinLobby = function (data) {
-  clearWorld();
   messageText.text("You are not currently in a game.");
   IDText.hide().val("");
   createGameText.text("");
@@ -53,8 +57,10 @@ var joinLobby = function (data) {
   joinGameButton.prop("disabled", false);
   joinGameText.prop("disabled", false);
   endGameButton.prop("disabled", true);
+  soldierButton.hide();
   viewport.hide();
   inGame = false;
+  clearWorld();
 };
 
 var joinWaiting = function (data) {
@@ -66,6 +72,7 @@ var joinWaiting = function (data) {
   joinGameButton.prop("disabled", true);
   joinGameText.prop("disabled", true);
   endGameButton.prop("disabled", false);
+  soldierButton.show();
   viewport.show();
   socket.emit("pause game", {});
   socket.emit("player ready", {});
@@ -90,10 +97,6 @@ var beginWorld = function (data) {
   socket.emit("play game", {});
 };
 
-var endWorld = function() {
-  world.remove
-}
-
 var getWorld = function (data) {
   var state = $.map(world._bodies, function (value) {
     return {
@@ -102,48 +105,12 @@ var getWorld = function (data) {
     };
   });
   socket.emit("world state", {
-    player: data.player,
     world: state
   });
 };
 
 var setWorld = function (data) {
   updateWorld(data.world);
-};
-
-var parseInput = function (data) {
-  switch (data.type) {
-    case "poke":
-      interactionPoke(data.pos);
-      break;
-    case "move":
-      interactionMove(data.pos);
-      break;
-    case "release":
-      interactionRelease();
-      break;
-    default:
-  }
-};
-var attractor, attractorIndex;
-setInterval(function () {
-  attractor = Physics.behavior("attractor", {
-    order: 0,
-    strength: 0.005
-  });
-}, 500);
-var interactionPoke = function (pos) {
-  world.wakeUpAll();
-  attractor.position(pos);
-  world.add(attractor);
-  attractorIndex = world._behaviors.length - 1;
-};
-var interactionMove = function (pos) {
-  attractor.position(pos);
-};
-var interactionRelease = function () {
-  world.wakeUpAll();
-  world.remove(world._behaviors[attractorIndex]);
 };
 
 socket.on("create game success", joinWaiting);
@@ -159,4 +126,5 @@ socket.on("pause game failure", function (data) { alert("Error: failed to pause 
 socket.on("begin simulation", beginWorld);
 socket.on("get world state", getWorld);
 socket.on("set world state", setWorld);
-socket.on("interaction", parseInput);
+socket.on("soldier spawned", hireSoldier);
+socket.on("arrow spawned", fireArrow);

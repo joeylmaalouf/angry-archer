@@ -4,9 +4,8 @@ var bindSockets = function (io) {
   io.on("connection", function (socket) {
 
     var createGame = function (data) {
-      var game = coordinator.createGame(socket);
-      socket.game = game;
-      if (game) {
+      socket.game = coordinator.createGame(socket);
+      if (socket.game) {
         socket.emit("create game success", {
           gameID: socket.game.id,
           otherPlayer: "2"
@@ -18,14 +17,13 @@ var bindSockets = function (io) {
     };
 
     var joinGame = function (data) {
-      var game = coordinator.joinGame(socket, data.gameID);
-      socket.game = game;
-      if (game) {
-        game.p1.emit("join game success", {
+      socket.game = coordinator.joinGame(socket, data.gameID);
+      if (socket.game) {
+        socket.game.p1.emit("join game success", {
           gameID: socket.game.id,
           otherPlayer: "2"
         });
-        game.p2.emit("join game success", {
+        socket.game.p2.emit("join game success", {
           gameID: socket.game.id,
           otherPlayer: "1"
         });
@@ -92,13 +90,13 @@ var bindSockets = function (io) {
         socket.game.p2.emit("begin simulation", {});
         socket.game.p1.intervalID = setInterval(function () {
           if (socket.game && socket.game.p1) {
-            socket.game.p1.emit("get world state", { player: 1 });
+            socket.game.p1.emit("get world state", {});
           }
         }, delay);
         /* setTimeout(function () {
           socket.game.p2.intervalID = setInterval(function () {
             if (socket.game.p2) {
-              socket.game.p2.emit("get world state", { player: 2 });
+              socket.game.p2.emit("get world state", {});
             }
           }, delay);
         }, delay / 2); */
@@ -107,10 +105,10 @@ var bindSockets = function (io) {
 
     var sendState = function (data) {
       if (socket.game) {
-        if (data.player == 1 && socket.game.p2) {
+        if (socket.player == 1 && socket.game.p2) {
           socket.game.p2.emit("set world state", data);
         }
-        /* else if (data.player == 2 && socket.game.p1) {
+        /* else if (socket.player == 2 && socket.game.p1) {
           socket.game.p1.emit("set world state", data);
         } */
       }
@@ -127,9 +125,17 @@ var bindSockets = function (io) {
       }
     };
 
-    var fireArrow = function(data) {
-
-    }
+    var makeEntity = function (data) {
+      if (socket.game) {
+        data.isLeft = (socket.player === 1);
+        if (socket.game.p1) {
+          socket.game.p1.emit(data.type + " spawned", data);
+        }
+        if (socket.game.p2) {
+          socket.game.p2.emit(data.type + " spawned", data);
+        }
+      }
+    };
 
     socket.on("create game", createGame);
     socket.on("join game", joinGame);
@@ -139,8 +145,8 @@ var bindSockets = function (io) {
     socket.on("player ready", beginWorld);
     socket.on("world state", sendState);
     socket.on("interaction", sendInput);
+    socket.on("spawn entity", makeEntity)
     socket.on("disconnect", endGame);
-    socket.on("arrow", fireArrow);
   });
 };
 
