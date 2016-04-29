@@ -181,7 +181,8 @@ var makeFort = function (isLeft) {
 }
 
 var hireSoldier = function (data) {
-  world.add(Physics.body('circle', { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 }));
+  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  world.add(Physics.body('circle', soldier));
 };
 
 var fireArrow = function (data) {
@@ -197,7 +198,7 @@ var fireArrow = function (data) {
     vy: vel * Math.sin(ang),
     angle: ang,
     treatment: 'dynamic',
-    styles: {fillStyle: '0xffffff'},
+    styles: { fillStyle: data.isLeft ? '0x99ffcc' : '0x99ccff' },
     children: [
       Physics.body('rectangle', {
         x: 0,
