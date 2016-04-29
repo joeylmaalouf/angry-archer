@@ -1,4 +1,4 @@
-var SOLDIER_MAX_VEL = 100;
+var SOLDIER_MAX_VEL = 2;
 var colors = [
   ["0x268bd2", "0x0d394f"],
   ["0xc93b3b", "0x561414"],
@@ -50,8 +50,8 @@ function initWorld(world, Physics) {
   // render on each step
   world.on("step", function () {
     $.each(world._bodies, function(index, body) {
-      if (body.category === "soldier" && body.state.vel.vx < SOLDIER_MAX_VEL) {
-        body.state.angular.acc = body.team === 1 ? 5 : -5;
+      if (body.category === "soldier" && Math.abs(body.state.angular.vel) < SOLDIER_MAX_VEL) {
+        body.state.angular.acc = body.team === 1 ? 1 : -1;
       }
     });
     world.render();
@@ -227,7 +227,7 @@ var makeFort = function (isLeft) {
 }
 
 var hireSoldier = function (data) {
-  var soldier = { x: (data.isLeft ? 250 : worldWidth - 250), y: worldHeight - 30, radius: 20, category: 'soldier', team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  var soldier = { x: (data.isLeft ? 380 : worldWidth - 380), y: worldHeight - 30, radius: 20, mass: Math.PI * 20 * 20, category: 'soldier', team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
   world.add(Physics.body('circle', soldier));
 };
 
