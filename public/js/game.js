@@ -59,14 +59,14 @@ function initWorld(world, Physics) {
       if (A.name === "compound") { // If one of the bodies is an arrow (the only compound objects are arrows)
         if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
           world.remove(A);
-        } else if (B.name === "circle") {
+        } else if (B.name === "circle" && A.team != B.team) {
           world.remove(A);
           world.remove(B);
         }
       } else if (B.name === "compound") {
         if (A.uid === 1) {
           world.remove(B);
-        } else if (A.name === "circle") {
+        } else if (A.name === "circle" && A.team != B.team) {
           world.remove(A);
           world.remove(B);
         }
@@ -205,7 +205,7 @@ var makeFort = function (isLeft) {
 }
 
 var hireSoldier = function (data) {
-  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
   world.add(Physics.body('circle', soldier));
 };
 
@@ -223,6 +223,7 @@ var fireArrow = function (data) {
     angle: ang,
     treatment: 'dynamic',
     styles: { fillStyle: data.isLeft ? '0x99ffcc' : '0x99ccff' },
+    team: data.isLeft ? 1 : 2,
     children: [
       Physics.body('rectangle', {
         x: 0,
