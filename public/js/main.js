@@ -101,11 +101,16 @@ var getWorld = function (data) {
   var getConfig = function (body) {
     return {
       uid: body.uid,
+      team: body.team,
+      category: body.category,
       name: body.name,
       state: body.state,
       x: body.state.pos.x,
       y: body.state.pos.y,
+      vx: body.state.vel.vx,
+      vy: body.state.vel.vy,
       angle: body.state.angular.pos,
+      angularVelocity: body.state.angular.vel,
       width: body.width,
       height: body.height,
       radius: body.radius,

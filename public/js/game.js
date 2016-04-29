@@ -57,12 +57,10 @@ function initWorld(world, Physics) {
     world.render();
   });
   
-  world.on("collisions:detected", function(data) {
-    
-    $.each(data.collisions, function(index, collision) {
+  world.on("collisions:detected", function (data) {
+    $.each(data.collisions, function (index, collision) {
       var A = collision.bodyA;
       var B = collision.bodyB;
-      
       if (A.category === "arrow") { // If one of the bodies is an arrow (the only compound objects are arrows)
         if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
           world.remove(A);
@@ -78,13 +76,13 @@ function initWorld(world, Physics) {
           world.remove(B);
         }
       }
-      
       if (A.category === 'player' || B.category === 'player') { // If one of the bodies is a player
         if (A.category === "soldier" || B.category === "soldier") { // If a soldier touches a player, remove both
           if (A.team != B.team) {
             world.remove(A);
             world.remove(B);
-            // Game over
+            // Game over!
+            // do end screen stuff here
           }
         }
       }
@@ -177,6 +175,8 @@ function updateWorld (theirBodies) {
       });
       var newBody = Physics.body(theirBody.name, theirBody);
       newBody.uid = theirBody.uid;
+      newBody.team = theirBody.team;
+      newBody.category = theirBody.category;
       world.add(newBody);
     }
   });
