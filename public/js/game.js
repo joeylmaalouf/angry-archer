@@ -200,13 +200,13 @@ var makeFort = function (isLeft) {
     { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20 },
     { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
     { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } }
   ];
 }
 
 var hireSoldier = function (data) {
-  var soldier = { name: 'circle', mass: 20, x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
-  addBodies([soldier], world, Physics);
+  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  world.add(Physics.body('circle', soldier));
 };
 
 var fireArrow = function (data) {
@@ -222,7 +222,7 @@ var fireArrow = function (data) {
     vy: vel * Math.sin(ang),
     angle: ang,
     treatment: 'dynamic',
-    styles: {fillStyle: '0xffffff'},
+    styles: { fillStyle: data.isLeft ? '0x99ffcc' : '0x99ccff' },
     children: [
       Physics.body('rectangle', {
         x: 0,
