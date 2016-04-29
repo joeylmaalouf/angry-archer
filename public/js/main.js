@@ -98,12 +98,27 @@ var beginWorld = function (data) {
 };
 
 var getWorld = function (data) {
-  var state = $.map(world._bodies, function (value) {
+  var getConfig = function (body) {
     return {
-      uid: value.uid,
-      state: value.state
+      uid: body.uid,
+      name: body.name,
+      state: body.state,
+      x: body.state.pos.x,
+      y: body.state.pos.y,
+      angle: body.state.angular.pos,
+      width: body.width,
+      height: body.height,
+      radius: body.radius,
+      vertices: body.vertices,
+      mass: body.mass,
+      cof: body.cof,
+      restitution: body.restitution,
+      treatment: body.treatment,
+      styles: body.styles,
+      children: $.map(body.children, getConfig)
     };
-  });
+  };
+  var state = $.map(world._bodies, getConfig);
   socket.emit("world state", {
     world: state
   });
