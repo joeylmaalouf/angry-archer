@@ -1,3 +1,4 @@
+var SOLDIER_MAX_VEL = 100;
 var colors = [
   ["0x268bd2", "0x0d394f"],
   ["0xc93b3b", "0x561414"],
@@ -48,6 +49,11 @@ function initWorld(world, Physics) {
   world.add(renderer);
   // render on each step
   world.on("step", function () {
+    $.each(world._bodies, function(index, body) {
+      if (body.category === "soldier" && body.state.vel.vx < SOLDIER_MAX_VEL) {
+        body.state.angular.acc = body.team === 1 ? 5 : -5;
+      }
+    });
     world.render();
   });
   
@@ -57,24 +63,24 @@ function initWorld(world, Physics) {
       var A = collision.bodyA;
       var B = collision.bodyB;
       
-      if (A.name === "compound") { // If one of the bodies is an arrow (the only compound objects are arrows)
+      if (A.category === "arrow") { // If one of the bodies is an arrow (the only compound objects are arrows)
         if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
           world.remove(A);
-        } else if (B.name === "circle" && A.team != B.team) {
+        } else if (B.category === "soldier" && A.team != B.team) {
           world.remove(A);
           world.remove(B);
         }
-      } else if (B.name === "compound") {
+      } else if (B.category === "arrow") {
         if (A.uid === 1) {
           world.remove(B);
-        } else if (A.name === "circle" && A.team != B.team) {
+        } else if (A.category === "soldier" && A.team != B.team) {
           world.remove(A);
           world.remove(B);
         }
       }
       
-      if (A.player || B.player) { // If one of the bodies is a player
-        if (A.name === "circle" || B.name === "circle") { // If a soldier touches a player, remove both
+      if (A.category === 'player' || B.category === 'player') { // If one of the bodies is a player
+        if (A.category === "soldier" || B.category === "soldier") { // If a soldier touches a player, remove both
           if (A.team != B.team) {
             world.remove(A);
             world.remove(B);
@@ -208,7 +214,7 @@ var makeFort = function (isLeft) {
     { name: 'rectangle', x: offset(130 + 120), y: worldHeight - 115, width: 20, height: 230, mass: 20*230, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 240, width: 140, height: 20, mass: 140*20, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 10, width: 100, height: 20, mass: 100*20, cof: cof, restitution: res},
-    { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 265, width: 20, height: 30, mass: 20*30, cof: cof, restitution: res, player: true, team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } },
+    { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 265, width: 20, height: 30, mass: 20*30, cof: cof, restitution: res, category: 'player', team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } },
     
     // tower 3
     { name: 'rectangle', x: offset(10 + 120 + 160), y: worldHeight - 75, width: 20, height: 150, mass: 20*150, cof: cof, restitution: res},
@@ -219,14 +225,14 @@ var makeFort = function (isLeft) {
 }
 
 var hireSoldier = function (data) {
-  var soldier = { x: (data.isLeft ? 250 : worldWidth - 250), y: worldHeight - 30, radius: 20, team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  var soldier = { x: (data.isLeft ? 250 : worldWidth - 250), y: worldHeight - 30, radius: 20, category: 'soldier', team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
   world.add(Physics.body('circle', soldier));
 };
 
 var fireArrow = function (data) {
   var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200}; // Default positions
   $.each(world._bodies, function(index, body) { // Update firing position to player position
-    if (body.player) {
+    if (body.category === 'player') {
       if ((data.isLeft && body.team === 1) || (!data.isLeft && body.team === 2)) {
         origin = {x: body.state.pos.x, y: body.state.pos.y - 40};
       }
@@ -246,6 +252,7 @@ var fireArrow = function (data) {
     treatment: 'dynamic',
     styles: { fillStyle: data.isLeft ? '0x99ffcc' : '0x99ccff' },
     team: data.isLeft ? 1 : 2,
+    category: 'arrow',
     children: [
       Physics.body('rectangle', {
         x: 0,
