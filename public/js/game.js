@@ -192,25 +192,32 @@ function addForts (world, Physics) {
 
 var makeFort = function (isLeft) {
   var offset = function (x) { return isLeft ? x : worldWidth - x; };
+  var res = 0;
+  var cof = 1;
   return [
-    { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100, mass: 20*100},
-    { name: 'rectangle', x: offset(10), y: worldHeight - 130, width: 20, height: 40, mass: 20*40},
-    { name: 'rectangle', x: offset(90), y: worldHeight - 50, width: 20, height: 100, mass: 20*100 },
-    { name: 'rectangle', x: offset(50), y: worldHeight - 110, width: 100, height: 20, mass: 100*20},
-    { name: 'rectangle', x: offset(110), y: worldHeight - 30, width: 20, height: 60, mass: 20*60},
-    { name: 'rectangle', x: offset(170), y: worldHeight - 30, width: 20, height: 60, mass: 20*60 },
-    { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20, mass: 80*20 },
-    { name: 'rectangle', x: offset(170), y: worldHeight - 121, width: 20, height: 80, mass: 20*80 },
-    { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20, mass: 190*20},
-    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(100), y: worldHeight - 190, width: 20, height: 30, mass: 20*30, player: true, team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } }
+    // tower 1
+    { name: 'rectangle', x: offset(10), y: worldHeight - 85, width: 20, height: 170, mass: 20*170, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(90), y: worldHeight - 85, width: 20, height: 170, mass: 20*170, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(50), y: worldHeight - 180, width: 100, height: 20, mass: 100*20, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(50), y: worldHeight - 10, width: 60, height: 20, mass: 60*20, cof: cof, restitution: res},
+    
+    // tower 2
+    { name: 'rectangle', x: offset(10 + 120), y: worldHeight - 115, width: 20, height: 230, mass: 20*230, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(130 + 120), y: worldHeight - 115, width: 20, height: 230, mass: 20*230, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 240, width: 140, height: 20, mass: 140*20, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 10, width: 100, height: 20, mass: 100*20, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 265, width: 20, height: 30, mass: 20*30, cof: cof, restitution: res, player: true, team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } },
+    
+    // tower 3
+    { name: 'rectangle', x: offset(10 + 120 + 160), y: worldHeight - 75, width: 20, height: 150, mass: 20*150, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(70 + 120 + 160), y: worldHeight - 75, width: 20, height: 150, mass: 20*150, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(40 + 120 + 160), y: worldHeight - 160, width: 80, height: 20, mass: 80*20, cof: cof, restitution: res},
+    { name: 'rectangle', x: offset(40 + 120 + 160), y: worldHeight - 10, width: 40, height: 20, mass: 40*20, cof: cof, restitution: res}
   ];
 }
 
 var hireSoldier = function (data) {
-  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  var soldier = { x: (data.isLeft ? 250 : worldWidth - 250), y: worldHeight - 30, radius: 20, team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
   world.add(Physics.body('circle', soldier));
 };
 
@@ -307,13 +314,13 @@ var createWorld = function() {
     // default integrator
     integrator: "verlet",
     // is sleeping disabled?
-    sleepDisabled: false,
+    sleepDisabled: true,
     // speed at which bodies wake up
-    sleepSpeedLimit: 0.1,
+    sleepSpeedLimit: 0.05,
     // variance in position below which bodies fall asleep
-    sleepVarianceLimit: 5,
+    sleepVarianceLimit: 2,
     // time (ms) before sleepy bodies fall asleep
-    sleepTimeLimit: 2000
+    sleepTimeLimit: 3000
   };
   Physics(worldConfig, [
     initWorld,
