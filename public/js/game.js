@@ -10,7 +10,7 @@ var colors = [
 var viewXOffset, viewScale, worldHeight;
 var worldWidth = 1200;
 function initWorld(world, Physics) {
-  var aspectRatio = 2 / 1;
+  var aspectRatio = 2.6;
   worldHeight = worldWidth / aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
