@@ -94,8 +94,6 @@ function addInteraction (world, Physics) {
       pos.x *= viewScale;
       pos.y *= viewScale;
       if (0 < pos.x && pos.x < worldWidth && 0 < pos.y && pos.y < worldHeight) {
-        console.log(pos.x, worldWidth);
-        console.log(pos.y, worldHeight);
         socket.emit("spawn entity", { type: "arrow", target: pos });
       }
     }
