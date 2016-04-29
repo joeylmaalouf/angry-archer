@@ -100,11 +100,6 @@ function addInteraction (world, Physics) {
   });
 }
 
-// helper function (bind "this" to Physics)
-function makeBody (obj) { 
-  return this.body(obj.name, obj);
-}
-
 /*
   copyBodyState({src}, {dst}) -> void
   given two state objects, copy attributes from one to another
@@ -119,24 +114,29 @@ function copyBodyState (src, dst) {
 };
 
 /*
-  updateWorld(Array[{uid: Number, state: {}}]) -> undefined
+  updateWorld(Array[{uid: Number, state: {}, config: {}}]) -> undefined
 
   Update/add/remove bodies to synchronize game state between clients
   Assumptions:
     uid is identical for bodies between clients
 */
-function updateWorld(theirBodies) {
+function updateWorld (theirBodies) {
   // Sort by ascending uid
-  theirBodies.sort(function(a,b) {return a.uid - b.uid});
+  theirBodies.sort(function (a, b) { return a.uid - b.uid; });
 
   // Add/Update Bodies
-  theirBodies.map(function(theirBody) {
+  $.map(theirBodies, function (theirBody) {
     var myBody;
-    if (world._bodies.some(function(el) {myBody = el; return el.uid == theirBody.uid})) {
+    if (world._bodies.some(function (el) {myBody = el; return el.uid == theirBody.uid; })) {
       copyBodyState(theirBody.state, myBody.state);
       copyBodyState(theirBody.state.old, myBody.state.old);
     } else {
-      world.add(theirBody);
+      theirBody.children = $.map(theirBody.children, function (child) {
+        return Physics.body(child.name, child);
+      });
+      var newBody = Physics.body(theirBody.name, theirBody);
+      newBody.uid = theirBody.uid;
+      world.add(newBody);
     }
   });
 
@@ -150,16 +150,11 @@ function updateWorld(theirBodies) {
   };
 }
 
-// Add bodies to the world
-function addBodies (bodies, world, Physics) {
-  world.add(bodies.map(makeBody.bind(Physics)));
-}
-
 function addForts (world, Physics) {
   var bodies = [];
   $.merge(bodies, makeFort(true));
   $.merge(bodies, makeFort(false));
-  addBodies(bodies, world, Physics);
+  $.map(bodies, function (b) { world.add(Physics.body(b.name, b)); });
 }
 
 var makeFort = function (isLeft) {
