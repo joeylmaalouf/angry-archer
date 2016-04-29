@@ -101,6 +101,8 @@ var getWorld = function (data) {
   var getConfig = function (body) {
     return {
       uid: body.uid,
+      team: body.team,
+      category: body.category,
       name: body.name,
       state: body.state,
       x: body.state.pos.x,

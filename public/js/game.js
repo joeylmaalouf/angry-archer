@@ -169,6 +169,8 @@ function updateWorld (theirBodies) {
       });
       var newBody = Physics.body(theirBody.name, theirBody);
       newBody.uid = theirBody.uid;
+      newBody.team = theirBody.team;
+      newBody.category = theirBody.category;
       world.add(newBody);
     }
   });
