@@ -51,11 +51,10 @@ function initWorld(world, Physics) {
     world.render();
   });
   
-  world.on("collisions:detected", function(data) {
-    $.each(data.collisions, function(index, collision) {
+  world.on("collisions:detected", function (data) {
+    $.each(data.collisions, function (index, collision) {
       var A = collision.bodyA;
       var B = collision.bodyB;
-      
       if (A.name === "compound") { // If one of the bodies is an arrow (the only compound objects are arrows)
         if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
           world.remove(A);
@@ -71,13 +70,13 @@ function initWorld(world, Physics) {
           world.remove(B);
         }
       }
-      
       if (A.player || B.player) { // If one of the bodies is a player
         if (A.name === "circle" || B.name === "circle") { // If a soldier touches a player, remove both
           if (A.team != B.team) {
             world.remove(A);
             world.remove(B);
-            // Game over
+            // Game over!
+            // do end screen stuff here
           }
         }
       }
@@ -217,7 +216,7 @@ var hireSoldier = function (data) {
 
 var fireArrow = function (data) {
   var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200}; // Default positions
-  $.each(world._bodies, function(index, body) { // Update firing position to player position
+  $.each(world._bodies, function (index, body) { // Update firing position to player position
     if (body.player) {
       if ((data.isLeft && body.team === 1) || (!data.isLeft && body.team === 2)) {
         origin = {x: body.state.pos.x, y: body.state.pos.y - 40};
