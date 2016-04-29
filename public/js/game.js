@@ -51,6 +51,29 @@ function initWorld(world, Physics) {
     world.render();
   });
   
+  world.on("collisions:detected", function(data) {
+    $.each(data.collisions, function(index, collision) {
+      var A = collision.bodyA;
+      var B = collision.bodyB;
+      
+      if (A.name === "compound") { // If one of the bodies is an arrow (the only compound objects are arrows)
+        if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
+          world.remove(A);
+        } else if (B.name === "circle") {
+          world.remove(A);
+          world.remove(B);
+        }
+      } else if (B.name === "compound") {
+        if (A.uid === 1) {
+          world.remove(B);
+        } else if (A.name === "circle") {
+          world.remove(A);
+          world.remove(B);
+        }
+      }
+    });
+  });
+  
   // constrain objects to these bounds
   edgeBounce = Physics.behavior("edge-collision-detection", {
     aabb: boundingBox,
@@ -72,6 +95,7 @@ function initWorld(world, Physics) {
     Physics.behavior("body-impulse-response"),
     Physics.behavior("body-collision-detection"),
     Physics.behavior("sweep-prune"),
+    Physics.behavior("body-collision-detection"),
     edgeBounce
   ]);  
 }
@@ -94,8 +118,6 @@ function addInteraction (world, Physics) {
       pos.x *= viewScale;
       pos.y *= viewScale;
       if (0 < pos.x && pos.x < worldWidth && 0 < pos.y && pos.y < worldHeight) {
-        console.log(pos.x, worldWidth);
-        console.log(pos.y, worldHeight);
         socket.emit("spawn entity", { type: "arrow", target: pos });
       }
     }
@@ -183,7 +205,7 @@ var makeFort = function (isLeft) {
 }
 
 var hireSoldier = function (data) {
-  var soldier = { name: 'circle', x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
+  var soldier = { name: 'circle', mass: 20, x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
   addBodies([soldier], world, Physics);
 };
 
