@@ -174,13 +174,12 @@ var makeFort = function (isLeft) {
     { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20 },
     { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
     { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } }
   ];
 }
 
 var hireSoldier = function (data) {
-  var soldier = { name: 'circle', x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 };
-  addBodies([soldier], world, Physics);
+  world.add(Physics.body('circle', { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20 }));
 };
 
 var fireArrow = function (data) {
