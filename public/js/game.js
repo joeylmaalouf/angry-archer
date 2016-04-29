@@ -9,7 +9,7 @@ var colors = [
 var viewXOffset, viewScale, worldHeight;
 var worldWidth = 1200;
 function initWorld(world, Physics) {
-  var aspectRatio = 3 / 1;
+  var aspectRatio = 2 / 1;
   worldHeight = worldWidth / aspectRatio;
   var viewWidthPercentage = .95;
   viewXOffset = window.innerWidth * ((1 - viewWidthPercentage) / 2);
@@ -51,6 +51,39 @@ function initWorld(world, Physics) {
     world.render();
   });
   
+  world.on("collisions:detected", function(data) {
+    $.each(data.collisions, function(index, collision) {
+      var A = collision.bodyA;
+      var B = collision.bodyB;
+      
+      if (A.name === "compound") { // If one of the bodies is an arrow (the only compound objects are arrows)
+        if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
+          world.remove(A);
+        } else if (B.name === "circle" && A.team != B.team) {
+          world.remove(A);
+          world.remove(B);
+        }
+      } else if (B.name === "compound") {
+        if (A.uid === 1) {
+          world.remove(B);
+        } else if (A.name === "circle" && A.team != B.team) {
+          world.remove(A);
+          world.remove(B);
+        }
+      }
+      
+      if (A.player || B.player) { // If one of the bodies is a player
+        if (A.name === "circle" || B.name === "circle") { // If a soldier touches a player, remove both
+          if (A.team != B.team) {
+            world.remove(A);
+            world.remove(B);
+            // Game over
+          }
+        }
+      }
+    });
+  });
+  
   // constrain objects to these bounds
   edgeBounce = Physics.behavior("edge-collision-detection", {
     aabb: boundingBox,
@@ -72,6 +105,7 @@ function initWorld(world, Physics) {
     Physics.behavior("body-impulse-response"),
     Physics.behavior("body-collision-detection"),
     Physics.behavior("sweep-prune"),
+    Physics.behavior("body-collision-detection"),
     edgeBounce
   ]);  
 }
@@ -160,31 +194,40 @@ function addForts (world, Physics) {
 var makeFort = function (isLeft) {
   var offset = function (x) { return isLeft ? x : worldWidth - x; };
   return [
-    { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100 },
-    { name: 'rectangle', x: offset(10), y: worldHeight - 130, width: 20, height: 40 },
-    { name: 'rectangle', x: offset(90), y: worldHeight - 50, width: 20, height: 100 },
-    { name: 'rectangle', x: offset(50), y: worldHeight - 110, width: 100, height: 20 },
-    { name: 'rectangle', x: offset(110), y: worldHeight - 30, width: 20, height: 60 },
-    { name: 'rectangle', x: offset(170), y: worldHeight - 30, width: 20, height: 60 },
-    { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20 },
-    { name: 'rectangle', x: offset(170), y: worldHeight - 121, width: 20, height: 80 },
-    { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20 },
-    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } },
-    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, styles: { fillStyle: '0xffcc00' } }
+    { name: 'rectangle', x: offset(10), y: worldHeight - 50, width: 20, height: 100, mass: 20*100},
+    { name: 'rectangle', x: offset(10), y: worldHeight - 130, width: 20, height: 40, mass: 20*40},
+    { name: 'rectangle', x: offset(90), y: worldHeight - 50, width: 20, height: 100, mass: 20*100 },
+    { name: 'rectangle', x: offset(50), y: worldHeight - 110, width: 100, height: 20, mass: 100*20},
+    { name: 'rectangle', x: offset(110), y: worldHeight - 30, width: 20, height: 60, mass: 20*60},
+    { name: 'rectangle', x: offset(170), y: worldHeight - 30, width: 20, height: 60, mass: 20*60 },
+    { name: 'rectangle', x: offset(140), y: worldHeight - 70, width: 80, height: 20, mass: 80*20 },
+    { name: 'rectangle', x: offset(170), y: worldHeight - 121, width: 20, height: 80, mass: 20*80 },
+    { name: 'rectangle', x: offset(85), y: worldHeight - 175, width: 190, height: 20, mass: 190*20},
+    { name: 'rectangle', x: offset(85), y: worldHeight - 140, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(65), y: worldHeight - 140, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(75), y: worldHeight - 150, width: 20, height: 10, mass: 20*10, styles: { fillStyle: '0xffcc00' } },
+    { name: 'rectangle', x: offset(100), y: worldHeight - 190, width: 20, height: 30, mass: 20*30, player: true, team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } }
   ];
 }
 
 var hireSoldier = function (data) {
-  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
+  var soldier = { x: (data.isLeft ? 220 : worldWidth - 220), y: worldHeight - 30, radius: 20, team: data.isLeft ? 1 : 2, styles: { fillStyle: data.isLeft ? '0x00dd44' : '0x0044dd' } };
   world.add(Physics.body('circle', soldier));
 };
 
 var fireArrow = function (data) {
-  var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200};
+  var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200}; // Default positions
+  $.each(world._bodies, function(index, body) { // Update firing position to player position
+    if (body.player) {
+      if ((data.isLeft && body.team === 1) || (!data.isLeft && body.team === 2)) {
+        origin = {x: body.state.pos.x, y: body.state.pos.y - 40};
+      }
+    }
+  });
+  
   var trace = {x: data.target.x - origin.x, y: data.target.y - origin.y};
   var ang = data.isLeft ? Math.atan(trace.y / trace.x) : Math.atan(trace.y / trace.x) + Math.PI;
-  var vel = Math.sqrt(Math.pow(trace.x, 2) + Math.pow(trace.y, 2)) * 0.005;
+  var vel = Math.sqrt(Math.pow(trace.x, 2) + Math.pow(trace.y, 2)) * 0.002;
 
   world.add(Physics.body('compound', {
     x: origin.x,
@@ -194,18 +237,19 @@ var fireArrow = function (data) {
     angle: ang,
     treatment: 'dynamic',
     styles: { fillStyle: data.isLeft ? '0x99ffcc' : '0x99ccff' },
+    team: data.isLeft ? 1 : 2,
     children: [
       Physics.body('rectangle', {
         x: 0,
         y: 0,
         width: 60,
         height: 4,
-        mass: 5
+        mass: 60*4
       }),
       Physics.body('convex-polygon', {
         x: 30,
         y: 0,
-        mass: 1,
+        mass: 5*15,
         vertices: [
           {x: 0, y: 15},
           {x: 5, y: 0},
@@ -216,7 +260,7 @@ var fireArrow = function (data) {
       Physics.body('convex-polygon', {
         x: -25,
         y: 3,
-        mass: 1,
+        mass: 5*15*.5,
         vertices: [
           {x: 0, y: 15},
           {x: 0, y: 0},
@@ -227,7 +271,7 @@ var fireArrow = function (data) {
       Physics.body('convex-polygon', {
         x: -25,
         y: -3,
-        mass: 1,
+        mass: 5*15*.5,
         vertices: [
           {x: 0, y: 15},
           {x: 0, y: 0},
