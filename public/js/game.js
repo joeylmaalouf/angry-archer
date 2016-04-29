@@ -61,8 +61,8 @@ function initWorld(world, Physics) {
     $.each(data.collisions, function (index, collision) {
       var A = collision.bodyA;
       var B = collision.bodyB;
-      if (A.category === "arrow") { // If one of the bodies is an arrow (the only compound objects are arrows)
-        if (B.uid === 1) { // Delete soldier and arrow (only soldiers are circles)
+      if (A.category === "arrow") {
+        if (B.uid === 1) {
           world.remove(A);
         } else if (B.category === "soldier" && A.team != B.team) {
           world.remove(A);
@@ -78,12 +78,12 @@ function initWorld(world, Physics) {
       }
       if (A.category === 'player' || B.category === 'player') { // If one of the bodies is a player
         if (A.category === "soldier" || B.category === "soldier") { // If a soldier touches a player, remove both
-          if (A.team != B.team) {
-            world.remove(A);
-            world.remove(B);
+          // if (A.team != B.team) {
+            // world.remove(A);
+            // world.remove(B);
             // Game over!
             // do end screen stuff here
-          }
+          // }
         }
       }
     });
@@ -174,6 +174,8 @@ function updateWorld (theirBodies) {
         return Physics.body(child.name, child);
       });
       var newBody = Physics.body(theirBody.name, theirBody);
+      copyBodyState(theirBody.state, newBody.state);
+      copyBodyState(theirBody.state.old, newBody.state.old);
       newBody.uid = theirBody.uid;
       newBody.team = theirBody.team;
       newBody.category = theirBody.category;
