@@ -58,9 +58,9 @@ $(document).keydown(function (event) {
 var joinLobby = function (data) {
   if (data.winner != undefined) {
     messageText.text("Player " + data.winner + " wins!");
-    setTimeout(function() {
+    setTimeout(function () {
       location.reload(true);
-    }, 3000);
+    }, 1500);
   }
   else {
     messageText.text("You are not currently in a game.");

@@ -233,6 +233,7 @@ var hireSoldier = function (data) {
 };
 
 var fireArrow = function (data) {
+  if (!canShoot) { return; }
   canShoot = false;
   setTimeout(function () { canShoot = true; }, 1000);
 
