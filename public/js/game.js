@@ -233,6 +233,9 @@ var hireSoldier = function (data) {
 };
 
 var fireArrow = function (data) {
+  canShoot = false;
+  setTimeout(function () { canShoot = true; }, 1000);
+
   var origin = {x: (data.isLeft ? 200 : worldWidth - 200), y: worldHeight - 200}; // Default positions
   $.each(world._bodies, function(index, body) { // Update firing position to player position
     if (body.category === 'player') {
@@ -363,7 +366,7 @@ var endGame = function() {
       winningTeam = body.team;
     }
   });
-  if (numWinners > 1 || numWinners === 0) {
+  if (numWinners != 1) {
     winningTeam = 'nobody';
   }
   winGame(winningTeam);

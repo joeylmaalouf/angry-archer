@@ -4,7 +4,7 @@ var createGameButton, joinGameButton, endGameButton;
 var soldierButton, goldText, goldCount;
 var viewport;
 var inGame;
-var gold, goldIntervalID;
+var gold, goldIntervalID, canShoot;
 
 $(document).ready(function () {
   messageText = $("#messageText");
@@ -38,7 +38,6 @@ $(document).ready(function () {
     }
   });
 
-  gold = 0;
   joinLobby({});
 });
 
@@ -77,6 +76,8 @@ var joinLobby = function (data) {
   goldText.hide();
   viewport.hide();
   inGame = false;
+  canShoot = true;
+  gold = 0;
   clearWorld();
 };
 
