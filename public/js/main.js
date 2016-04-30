@@ -49,14 +49,22 @@ $(document).keydown(function (event) {
 });
 
 var joinLobby = function (data) {
-  messageText.text("You are not currently in a game.");
+  if (data.winner != undefined) {
+    messageText.text("Player " + data.winner + " wins!");
+    setTimeout(function() {
+      location.reload(true);
+    }, 3000);
+  }
+  else {
+    messageText.text("You are not currently in a game.");
+    createGameButton.prop("disabled", false);
+    joinGameButton.prop("disabled", false);
+    joinGameText.prop("disabled", false);
+    endGameButton.prop("disabled", true);
+  }
   IDText.hide().val("");
   createGameText.text("");
   joinGameText.val("");
-  createGameButton.prop("disabled", false);
-  joinGameButton.prop("disabled", false);
-  joinGameText.prop("disabled", false);
-  endGameButton.prop("disabled", true);
   soldierButton.hide();
   viewport.hide();
   inGame = false;
@@ -84,6 +92,13 @@ var startGame = function (data) {
     Physics.util.ticker.start();
   }
 };
+
+var winGame = function(winner) {
+  if (inGame) {
+    socket.emit("end game", {winner: winner});
+    inGame = false;
+  }
+}
 
 var stopGame = function (data) {
   if (Physics) {

@@ -78,12 +78,11 @@ function initWorld(world, Physics) {
       }
       if (A.category === 'player' || B.category === 'player') { // If one of the bodies is a player
         if (A.category === "soldier" || B.category === "soldier") { // If a soldier touches a player, remove both
-          // if (A.team != B.team) {
-            // world.remove(A);
-            // world.remove(B);
-            // Game over!
-            // do end screen stuff here
-          // }
+          if (A.team != B.team) {
+            world.remove(A);
+            world.remove(B);
+            endGame();
+          }
         }
       }
     });
@@ -118,7 +117,9 @@ function initWorld(world, Physics) {
 function startWorld (world, Physics) {
   // subscribe to ticker to advance the simulation
   Physics.util.ticker.on(function (time) {
-    world.step(time);
+    if (world != null) {
+      world.step(time);
+    }
   });
   window.world = world;
 }
@@ -236,7 +237,7 @@ var fireArrow = function (data) {
   $.each(world._bodies, function(index, body) { // Update firing position to player position
     if (body.category === 'player') {
       if ((data.isLeft && body.team === 1) || (!data.isLeft && body.team === 2)) {
-        origin = {x: body.state.pos.x, y: body.state.pos.y - 40};
+        origin = {x: body.state.pos.x + (data.isLeft ? 30 : -30), y: body.state.pos.y - 40};
       }
     }
   });
@@ -347,7 +348,23 @@ var createWorld = function() {
 */
 var clearWorld = function() {
   if (window.world) {
-    world.destroy();
+    Physics.util.ticker.stop();
+    window.world.destroy();
     $("#viewport").children(0).remove();
   }
+}
+
+var endGame = function() {
+  var numWinners = 0;
+  var winningTeam;
+  $.each(world._bodies, function(index, body) {
+    if (body.category === 'player') {
+      numWinners++;
+      winningTeam = body.team;
+    }
+  });
+  if (numWinners > 1 || numWinners === 0) {
+    winningTeam = 'nobody';
+  }
+  winGame(winningTeam);
 }

@@ -37,13 +37,13 @@ var bindSockets = function (io) {
       if (socket.game) {
         coordinator.endGame(socket.game.id);
         if (socket.game.p1) {
-          socket.game.p1.emit("end game success", {});
+          socket.game.p1.emit("end game success", data);
           if (socket.game.p1.intervalID) {
             clearInterval(socket.game.p1.intervalID);
           }
         }
         if (socket.game.p2) {
-          socket.game.p2.emit("end game success", {});
+          socket.game.p2.emit("end game success", data);
           if (socket.game.p2.intervalID) {
             clearInterval(socket.game.p2.intervalID);
           }
