@@ -1,8 +1,10 @@
 var socket = io.connect();
 var messageText, createGameText, joinGameText, IDText;
-var createGameButton, joinGameButton, endGameButton, soldierButton;
+var createGameButton, joinGameButton, endGameButton;
+var soldierButton, goldText, goldCount;
 var viewport;
 var inGame;
+var gold, goldIntervalID;
 
 $(document).ready(function () {
   messageText = $("#messageText");
@@ -13,6 +15,8 @@ $(document).ready(function () {
   joinGameButton = $("#joinGameButton");
   endGameButton = $("#endGameButton");
   soldierButton = $("#soldierButton");
+  goldText = $("#goldText");
+  goldCount = $("#goldCount");
   viewport = $("#viewport");
   
   createGameButton.click(function () {
@@ -28,9 +32,13 @@ $(document).ready(function () {
   });
 
   soldierButton.click(function () {
-    socket.emit("spawn entity", { type: "soldier" });
+    if (inGame && gold >= 10) {
+      gold -= 10;
+      socket.emit("spawn entity", { type: "soldier" });
+    }
   });
 
+  gold = 0;
   joinLobby({});
 });
 
@@ -66,6 +74,7 @@ var joinLobby = function (data) {
   createGameText.text("");
   joinGameText.val("");
   soldierButton.hide();
+  goldText.hide();
   viewport.hide();
   inGame = false;
   clearWorld();
@@ -80,14 +89,21 @@ var joinWaiting = function (data) {
   joinGameButton.prop("disabled", true);
   joinGameText.prop("disabled", true);
   endGameButton.prop("disabled", false);
-  soldierButton.show();
+  soldierButton.hide();
+  goldText.hide();
   viewport.show();
   socket.emit("pause game", {});
   socket.emit("player ready", {});
-  inGame = true;
+  inGame = false;
 };
 
+var gainGold = function () {
+  ++gold;
+  goldCount.text("000".substring(0, 3 - gold.toString().length) + gold);
+}
+
 var startGame = function (data) {
+  goldIntervalID = setInterval(gainGold, 1000);
   if (Physics) {
     Physics.util.ticker.start();
   }
@@ -101,12 +117,16 @@ var winGame = function(winner) {
 }
 
 var stopGame = function (data) {
+  clearInterval(goldIntervalID);
   if (Physics) {
     Physics.util.ticker.stop();
   }
 };
 
 var beginWorld = function (data) {
+  inGame = true;
+  soldierButton.show();
+  goldText.show();
   createWorld();
   createGameText.text("Welcome to Angry Archer!");
   socket.emit("play game", {});

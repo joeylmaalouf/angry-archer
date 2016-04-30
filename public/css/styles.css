@@ -30,3 +30,10 @@
 a:hover {
   text-decoration: none; /* eat it, bootstrap */
 }
+
+#soldierButton {
+  background: url("/img/sword32.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  padding: 12px 20px;
+}
