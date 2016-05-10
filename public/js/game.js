@@ -56,7 +56,7 @@ function initWorld(world, Physics) {
     });
     world.render();
   });
-  
+
   world.on("collisions:detected", function (data) {
     $.each(data.collisions, function (index, collision) {
       var A = collision.bodyA;
@@ -87,7 +87,7 @@ function initWorld(world, Physics) {
       }
     });
   });
-  
+
   // constrain objects to these bounds
   edgeBounce = Physics.behavior("edge-collision-detection", {
     aabb: boundingBox,
@@ -111,7 +111,7 @@ function initWorld(world, Physics) {
     Physics.behavior("sweep-prune"),
     Physics.behavior("body-collision-detection"),
     edgeBounce
-  ]);  
+  ]);
 }
 
 function startWorld (world, Physics) {
@@ -206,19 +206,20 @@ var makeFort = function (isLeft) {
   var res = 0;
   var cof = 1;
   return [
+    // Might have been nice to pull some of these "magic numbers" for positioning out into constants at the top of the function/file?
     // tower 1
     { name: 'rectangle', x: offset(10), y: worldHeight - 85, width: 20, height: 170, mass: 20*170, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(90), y: worldHeight - 85, width: 20, height: 170, mass: 20*170, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(50), y: worldHeight - 180, width: 100, height: 20, mass: 100*20, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(50), y: worldHeight - 10, width: 60, height: 20, mass: 60*20, cof: cof, restitution: res},
-    
+
     // tower 2
     { name: 'rectangle', x: offset(10 + 120), y: worldHeight - 115, width: 20, height: 230, mass: 20*230, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(130 + 120), y: worldHeight - 115, width: 20, height: 230, mass: 20*230, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 240, width: 140, height: 20, mass: 140*20, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 10, width: 100, height: 20, mass: 100*20, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120), y: worldHeight - 265, width: 20, height: 30, mass: 20*30, cof: cof, restitution: res, category: 'player', team: isLeft ? 1 : 2, styles: { fillStyle: isLeft ? '0x00dd44' : '0x0044dd' } },
-    
+
     // tower 3
     { name: 'rectangle', x: offset(10 + 120 + 160), y: worldHeight - 75, width: 20, height: 150, mass: 20*150, cof: cof, restitution: res},
     { name: 'rectangle', x: offset(70 + 120 + 160), y: worldHeight - 75, width: 20, height: 150, mass: 20*150, cof: cof, restitution: res},
@@ -245,7 +246,7 @@ var fireArrow = function (data) {
       }
     }
   });
-  
+
   var trace = {x: data.target.x - origin.x, y: data.target.y - origin.y};
   var ang = data.isLeft ? Math.atan(trace.y / trace.x) : Math.atan(trace.y / trace.x) + Math.PI;
   var vel = Math.sqrt(Math.pow(trace.x, 2) + Math.pow(trace.y, 2)) * 0.002;
