@@ -82,7 +82,7 @@ var bindSockets = function (io) {
         socket.emit("pause game failure", {});
       }
     };
-    
+
     var beginWorld = function (data) {
       var delay = 1000;
       if (++socket.game.numReady == 2) {
@@ -137,6 +137,16 @@ var bindSockets = function (io) {
       }
     };
 
+    /* In larger applications, I've seen people choose more-likely-to-be-unique
+       strings as event identifiers, e.g. "CREATE_GAME" instead of "create game".
+       The reasoning: it's pretty likely that a string like "create game" might
+       show up elsewhere in the code (maybe in a comment) in a context which is
+       unrelated to the socket event -- but it's less likely that "CREATE_GAME"
+       will be anywhere else. So, if you need to search your repo for everything
+       related to a particular socket event, a string like "CREATE_GAME" is nice
+       because it's pretty likely that everything you find will actually be relevant.
+       Not a big deal at this scale -- just nice to know :)
+     */
     socket.on("create game", createGame);
     socket.on("join game", joinGame);
     socket.on("end game", endGame);
